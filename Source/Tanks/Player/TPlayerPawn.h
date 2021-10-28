@@ -17,18 +17,32 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:
-	UPROPERTY(VisibleAnywhere)
+	UFUNCTION()
+		void MoveForward(float AxisValue);
+
+	UFUNCTION()
+		void MoveRight(float AxisValue);
+
+protected:
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* BodyMeshComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* TurretMeshComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		USpringArmComponent* SpringArmComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite,	Category = "Components")
 		UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+		float MoveSpeed = 100;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+		float RotationSpeed = 100;
+
+	float _targetForwardAxisValue;
+	float _targetRightAxisValue;
 
 protected:
 	virtual void BeginPlay() override;
