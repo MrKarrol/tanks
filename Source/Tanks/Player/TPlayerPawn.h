@@ -37,16 +37,24 @@ protected:
 		UCameraComponent* CameraComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
-		float MoveSpeed = 100;
+		float MoveSpeed = 512.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
-		float RotationSpeed = 100;
-
-	float _targetForwardAxisValue;
-	float _targetRightAxisValue;
+		float MoveAcceleration = 1024.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+		float RotationSpeed = 100.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+		float RotationAcceleration = 64.f;
 
 protected:
 	virtual void BeginPlay() override;
 
+	void PerformMovement(float DeltaTime);
+
 private:
+	float mCurrentMoveSpeed = 0.f;
+	float mCurrentRotationSpeed = 0.f;
+
+	float mMoveForwardInput;
+	float mMoveRightInput;
 
 };

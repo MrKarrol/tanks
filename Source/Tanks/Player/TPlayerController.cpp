@@ -12,23 +12,23 @@ void ATPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	InputComponent->BindAxis("MoveForward", this, &ATPlayerController::MoveForward);
-	InputComponent->BindAxis("MoveRight", this, &ATPlayerController::MoveRight);
+	//InputComponent->BindAxis("MoveForward", this, &ATPlayerController::MoveForward);
+	//InputComponent->BindAxis("MoveRight", this, &ATPlayerController::MoveRight);
 }
 
 void ATPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerPawn = Cast<ATPlayerPawn>(GetPawn());
+	//PlayerPawn = Cast<ATPlayerPawn>(GetPawn());
 }
 
 void ATPlayerController::MoveForward(float AxisValue)
 {
-	PlayerPawn->MoveForward(AxisValue);
+	//PlayerPawn->MoveForward(AxisValue);
 }
 
 void ATPlayerController::MoveRight(float AxisValue)
 {
-	PlayerPawn->MoveRight(AxisValue);
+	//PlayerPawn->MoveRight(AxisValue);
 }
