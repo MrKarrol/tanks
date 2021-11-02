@@ -47,7 +47,11 @@ void ATPlayerPawn::PerformMovement(float DeltaTime)
 	const FRotator rotation_delta = FRotator(0.f, mCurrentRotationSpeed * DeltaTime * FMath::Sign(mMoveRightInput), 0.f);
 	SetActorRotation(GetActorRotation() + rotation_delta);
 
-	// turret rotation
+	PerformRightTurretRotation();
+}
+
+void ATPlayerPawn::PerformTurretRotation()
+{
 	if (auto controller = Cast<APlayerController>(GetController()))
 	{
 		FVector mouse_location, mouse_direction;
@@ -67,6 +71,23 @@ void ATPlayerPawn::PerformMovement(float DeltaTime)
 		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(TurretMeshComponent->GetComponentLocation(), correct_mouse_location);
 		TurretMeshComponent->SetWorldRotation(new_turret_direction);
 	}
+}
+
+void ATPlayerPawn::PerformRightTurretRotation()
+{
+	if (auto controller = Cast<APlayerController>(GetController()))
+	{
+		FHitResult result;
+		controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, result);
+		if (result.Location.IsNearlyZero())
+			return;
+		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(TurretMeshComponent->GetComponentLocation(), result.Location);
+		//GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("%s"), *result.Location.ToString()));
+		new_turret_direction.Roll = TurretMeshComponent->GetComponentRotation().Roll;
+		new_turret_direction.Pitch = TurretMeshComponent->GetComponentRotation().Pitch;
+		TurretMeshComponent->SetWorldRotation(new_turret_direction);
+	}
+	
 }
 
 void ATPlayerPawn::Tick(float DeltaTime)

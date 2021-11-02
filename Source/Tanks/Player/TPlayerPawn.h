@@ -49,6 +49,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	void PerformMovement(float DeltaTime);
+	void PerformTurretRotation();
+	void PerformRightTurretRotation();
 
 private:
 	float mCurrentMoveSpeed = 0.f;
