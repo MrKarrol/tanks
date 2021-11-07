@@ -6,6 +6,8 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class ATGun;
+class UArrowComponent;
 
 UCLASS()
 class TANKS_API ATPlayerPawn : public APawn
@@ -17,18 +19,24 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION()
-		void MoveForward(float AxisValue);
-
-	UFUNCTION()
-		void MoveRight(float AxisValue);
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
+	void Fire();
+	void AlternateFire();
+	void Reload();
 
 protected:
+	UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<ATGun> DefaultGunClass;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* BodyMeshComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* TurretMeshComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UArrowComponent* GunPivotLocation;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		USpringArmComponent* SpringArmComponent;
@@ -53,6 +61,9 @@ protected:
 	void PerformRightTurretRotation();
 
 private:
+	UPROPERTY()
+		ATGun* mGun = nullptr;
+
 	float mCurrentMoveSpeed = 0.f;
 	float mCurrentRotationSpeed = 0.f;
 

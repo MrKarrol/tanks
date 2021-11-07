@@ -2,8 +2,11 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
+#include "Tanks/Guns/TGun.h"
+#include "Tanks/Tanks.h"
 
 ATPlayerPawn::ATPlayerPawn()
 {
@@ -15,6 +18,9 @@ ATPlayerPawn::ATPlayerPawn()
 	TurretMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("TurretMeshComponent");
 	TurretMeshComponent->SetupAttachment(BodyMeshComponent);
 
+	GunPivotLocation = CreateDefaultSubobject<UArrowComponent>("GunPivotLocation");
+	GunPivotLocation->SetupAttachment(TurretMeshComponent);
+
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
 	SpringArmComponent->SetupAttachment(BodyMeshComponent);
 
@@ -25,6 +31,14 @@ ATPlayerPawn::ATPlayerPawn()
 void ATPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (DefaultGunClass)
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		mGun = GetWorld()->SpawnActor<ATGun>(DefaultGunClass, GunPivotLocation->GetComponentLocation(), GunPivotLocation->GetComponentRotation(), spawnParams);
+		mGun->AttachToComponent(GunPivotLocation, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Gun");
+	}
 }
 
 void ATPlayerPawn::PerformMovement(float DeltaTime)
@@ -46,8 +60,6 @@ void ATPlayerPawn::PerformMovement(float DeltaTime)
 	mCurrentRotationSpeed = FMath::FInterpConstantTo(mCurrentRotationSpeed, RotationSpeed * FMath::Abs(mMoveRightInput), DeltaTime, RotationAcceleration);
 	const FRotator rotation_delta = FRotator(0.f, mCurrentRotationSpeed * DeltaTime * FMath::Sign(mMoveRightInput), 0.f);
 	SetActorRotation(GetActorRotation() + rotation_delta);
-
-	PerformRightTurretRotation();
 }
 
 void ATPlayerPawn::PerformTurretRotation()
@@ -95,6 +107,7 @@ void ATPlayerPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	PerformMovement(DeltaTime);
+	PerformRightTurretRotation();
 }
 
 void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -103,6 +116,10 @@ void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATPlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATPlayerPawn::MoveRight);
+
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::Fire);
+	PlayerInputComponent->BindAction("AlternateFire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::AlternateFire);
+	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this, &ATPlayerPawn::Reload);
 }
 
 void ATPlayerPawn::MoveForward(float AxisValue)
@@ -113,4 +130,40 @@ void ATPlayerPawn::MoveForward(float AxisValue)
 void ATPlayerPawn::MoveRight(float AxisValue)
 {
 	mMoveRightInput = AxisValue;
+}
+
+void ATPlayerPawn::Fire()
+{
+	if (mGun)
+	{
+		mGun->Fire();
+	}
+	else
+	{
+		UE_LOG(LogT, Error, TEXT("Gun is null"));
+	}
+}
+
+void ATPlayerPawn::AlternateFire()
+{
+	if (mGun)
+	{
+		mGun->AlternateFire();
+	}
+	else
+	{
+		UE_LOG(LogT, Error, TEXT("Gun is null"));
+	}
+}
+
+void ATPlayerPawn::Reload()
+{
+	if (mGun)
+	{
+		mGun->Reload();
+	}
+	else
+	{
+		UE_LOG(LogT, Error, TEXT("Gun is null"));
+	}
 }
