@@ -8,6 +8,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class ATGun;
 class UArrowComponent;
+class UBoxComponent;
 
 UCLASS()
 class TANKS_API ATPlayerPawn : public APawn
@@ -21,13 +22,22 @@ public:
 
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
-	void Fire();
+
+	void StartFire();
+	void StopFire();
+
 	void AlternateFire();
+
 	void Reload();
+
+	void SetGun(TSubclassOf<ATGun> GunClass);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<ATGun> DefaultGunClass;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UBoxComponent* BoxComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* BodyMeshComponent;

@@ -3,6 +3,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "Tanks/Guns/TGun.h"
@@ -12,8 +13,11 @@ ATPlayerPawn::ATPlayerPawn()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
+	SetRootComponent(BoxComponent);
+
 	BodyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("BodyMeshComponent");
-	SetRootComponent(BodyMeshComponent);
+	BodyMeshComponent->SetupAttachment(BoxComponent);
 
 	TurretMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("TurretMeshComponent");
 	TurretMeshComponent->SetupAttachment(BodyMeshComponent);
@@ -32,25 +36,11 @@ void ATPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (DefaultGunClass)
-	{
-		FActorSpawnParameters spawnParams;
-		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		mGun = GetWorld()->SpawnActor<ATGun>(DefaultGunClass, GunPivotLocation->GetComponentLocation(), GunPivotLocation->GetComponentRotation(), spawnParams);
-		mGun->AttachToComponent(GunPivotLocation, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Gun");
-	}
+	SetGun(DefaultGunClass);
 }
 
 void ATPlayerPawn::PerformMovement(float DeltaTime)
 {
-	//FVector currentLocation = GetActorLocation();
-	//FVector forwardVector = GetActorForwardVector();
-	//FVector rightVector = GetActorRightVector();
-	//FVector movePosition = currentLocation
-	//	+ forwardVector * MoveSpeed * mMoveForwardInput * DeltaTime // forward - backward
-	//	+ rightVector * MoveSpeed * mMoveRightInput * DeltaTime; // right - left
-	//SetActorLocation(movePosition, true);
-
 	// move
 	mCurrentMoveSpeed = FMath::FInterpConstantTo(mCurrentMoveSpeed, MoveSpeed * FMath::Abs(mMoveForwardInput), DeltaTime, MoveAcceleration);
 	const FVector position_delta = GetActorForwardVector() * mCurrentMoveSpeed * DeltaTime * FMath::Sign(mMoveForwardInput);
@@ -117,7 +107,8 @@ void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATPlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATPlayerPawn::MoveRight);
 
-	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::Fire);
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::StartFire);
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ATPlayerPawn::StopFire);
 	PlayerInputComponent->BindAction("AlternateFire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::AlternateFire);
 	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this, &ATPlayerPawn::Reload);
 }
@@ -132,11 +123,23 @@ void ATPlayerPawn::MoveRight(float AxisValue)
 	mMoveRightInput = AxisValue;
 }
 
-void ATPlayerPawn::Fire()
+void ATPlayerPawn::StartFire()
 {
 	if (mGun)
 	{
-		mGun->Fire();
+		mGun->StartFire();
+	}
+	else
+	{
+		UE_LOG(LogT, Error, TEXT("Gun is null"));
+	}
+}
+
+void ATPlayerPawn::StopFire()
+{
+	if (mGun)
+	{
+		mGun->StopFire();
 	}
 	else
 	{
@@ -165,5 +168,19 @@ void ATPlayerPawn::Reload()
 	else
 	{
 		UE_LOG(LogT, Error, TEXT("Gun is null"));
+	}
+}
+
+void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
+{
+	if (GunClass)
+	{
+		if (mGun)
+			mGun->Destroy();
+
+		FActorSpawnParameters spawnParams;
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		mGun = GetWorld()->SpawnActor<ATGun>(GunClass, GunPivotLocation->GetComponentLocation(), GunPivotLocation->GetComponentRotation(), spawnParams);
+		mGun->AttachToComponent(GunPivotLocation, FAttachmentTransformRules::SnapToTargetIncludingScale, "Gun");
 	}
 }
