@@ -28,9 +28,10 @@ void ATGunBox::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 {
 	UE_LOG(LogT, Error, TEXT("Collision"));
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Got 0")));
-	if (const auto pawn = Cast<ATPlayerPawn>(OtherActor))
+	ATPlayerPawn* player_pawn = Cast<ATPlayerPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (player_pawn == OtherActor)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Got")));
-		pawn->SetGun(GunClass);
+		player_pawn->SetGun(GunClass);
 	}
 }
