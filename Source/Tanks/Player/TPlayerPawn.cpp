@@ -14,16 +14,13 @@ ATPlayerPawn::ATPlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
-	BoxComponent->SetupAttachment(RootComponent);
+	SetRootComponent(BoxComponent);
 
 	BodyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("BodyMeshComponent");
 	BodyMeshComponent->SetupAttachment(BoxComponent);
 
-	TurretMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("TurretMeshComponent");
-	TurretMeshComponent->SetupAttachment(BodyMeshComponent);
-
 	GunPivotLocation = CreateDefaultSubobject<UArrowComponent>("GunPivotLocation");
-	GunPivotLocation->SetupAttachment(TurretMeshComponent);
+	GunPivotLocation->SetupAttachment(BodyMeshComponent);
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
 	SpringArmComponent->SetupAttachment(BodyMeshComponent);
@@ -36,7 +33,10 @@ void ATPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	SetGun(DefaultGunClass);
+	GunClassFirst = DefaultGunClassFirst;
+	GunClassSecond = DefaultGunClassSecond;
+
+	ChangeGun(GunClassFirst);
 }
 
 void ATPlayerPawn::PerformMovement(float DeltaTime)
@@ -56,48 +56,29 @@ void ATPlayerPawn::PerformTurretRotation()
 {
 	if (auto controller = Cast<APlayerController>(GetController()))
 	{
-		FVector mouse_location, mouse_direction;
-		controller->DeprojectMousePositionToWorld(mouse_location, mouse_direction);
-
-		FVector correct_mouse_location = mouse_location;
-
-		FVector correct_mouse_direction = mouse_direction;
-		correct_mouse_direction.Z = 0;
-		correct_mouse_direction.Normalize();
-
-		correct_mouse_location = TurretMeshComponent->GetComponentLocation() + correct_mouse_direction * 100.f;
-
-		//DrawDebugPoint(GetWorld(), mouse_location, 10.f, FColor::Red, false);
-		//GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("%s"), *mouse_location.ToString()));
-
-		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(TurretMeshComponent->GetComponentLocation(), correct_mouse_location);
-		TurretMeshComponent->SetWorldRotation(new_turret_direction);
-	}
-}
-
-void ATPlayerPawn::PerformRightTurretRotation()
-{
-	if (auto controller = Cast<APlayerController>(GetController()))
-	{
 		FHitResult result;
 		controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, result);
 		if (result.Location.IsNearlyZero())
 			return;
-		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(TurretMeshComponent->GetComponentLocation(), result.Location);
+		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(GunPivotLocation->GetComponentLocation(), result.Location);
 		//GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("%s"), *result.Location.ToString()));
-		new_turret_direction.Roll = TurretMeshComponent->GetComponentRotation().Roll;
-		new_turret_direction.Pitch = TurretMeshComponent->GetComponentRotation().Pitch;
-		TurretMeshComponent->SetWorldRotation(new_turret_direction);
+		new_turret_direction.Roll = GunPivotLocation->GetComponentRotation().Roll;
+		new_turret_direction.Pitch = GunPivotLocation->GetComponentRotation().Pitch;
+		GunPivotLocation->SetWorldRotation(new_turret_direction);
 	}
 	
 }
+
+
 
 void ATPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("%s"), *GunPivotLocation->GetComponentLocation().ToString()));
+
 	PerformMovement(DeltaTime);
-	PerformRightTurretRotation();
+	PerformTurretRotation();
 }
 
 void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -110,7 +91,7 @@ void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::StartFire);
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ATPlayerPawn::StopFire);
 	PlayerInputComponent->BindAction("AlternateFire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::AlternateFire);
-	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this, &ATPlayerPawn::Reload);
+	PlayerInputComponent->BindAction("SwapGuns", EInputEvent::IE_Pressed, this, &ATPlayerPawn::SwapGuns);
 }
 
 void ATPlayerPawn::MoveForward(float AxisValue)
@@ -171,7 +152,61 @@ void ATPlayerPawn::Reload()
 	}
 }
 
+void ATPlayerPawn::SwapGuns()
+{
+	switch (mCurrentGun)
+	{
+	case 0:
+		if (GunClassSecond)
+		{
+			ChangeGun(GunClassSecond);
+			mCurrentGun = 1;
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("You now powered with second gun"));
+		}
+		else
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("You haven't second gun"));
+		break;
+	case 1:
+		if (GunClassSecond)
+		{
+			ChangeGun(GunClassFirst);
+			mCurrentGun = 0;
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("You now powered with first gun"));
+		}
+		else
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("You haven't first gun"));
+		break;
+	}
+}
+
 void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
+{
+	switch (mCurrentGun)
+	{
+	case 0:
+		if (!GunClassSecond)
+		{
+			GunClassSecond = GunClass;
+			SwapGuns();
+			return;
+		}
+		GunClassFirst = GunClass;
+		ChangeGun(GunClassFirst);
+		break;
+	case 1:
+		if (!GunClassFirst)
+		{
+			GunClassFirst = GunClass;
+			SwapGuns();
+			return;
+		}
+		GunClassSecond = GunClass;
+		ChangeGun(GunClassSecond);
+		break;
+	}
+}
+
+void ATPlayerPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
 {
 	if (GunClass)
 	{
@@ -181,6 +216,6 @@ void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
 		FActorSpawnParameters spawnParams;
 		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		mGun = GetWorld()->SpawnActor<ATGun>(GunClass, GunPivotLocation->GetComponentLocation(), GunPivotLocation->GetComponentRotation(), spawnParams);
-		mGun->AttachToComponent(GunPivotLocation, FAttachmentTransformRules::SnapToTargetIncludingScale, "Gun");
+		mGun->AttachToComponent(GunPivotLocation, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Gun");
 	}
 }

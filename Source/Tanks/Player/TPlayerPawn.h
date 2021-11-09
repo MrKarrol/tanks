@@ -30,11 +30,16 @@ public:
 
 	void Reload();
 
+	void SwapGuns();
+
 	void SetGun(TSubclassOf<ATGun> GunClass);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Components")
-		TSubclassOf<ATGun> DefaultGunClass;
+		TSubclassOf<ATGun> DefaultGunClassFirst;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<ATGun> DefaultGunClassSecond;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UBoxComponent* BoxComponent;
@@ -68,16 +73,24 @@ protected:
 
 	void PerformMovement(float DeltaTime);
 	void PerformTurretRotation();
-	void PerformRightTurretRotation();
+	void ChangeGun(TSubclassOf<ATGun> GunClass);
 
 private:
 	UPROPERTY()
 		ATGun* mGun = nullptr;
+
+	UPROPERTY()
+		TSubclassOf<ATGun> GunClassFirst;
+
+	UPROPERTY()
+		TSubclassOf<ATGun> GunClassSecond;
 
 	float mCurrentMoveSpeed = 0.f;
 	float mCurrentRotationSpeed = 0.f;
 
 	float mMoveForwardInput;
 	float mMoveRightInput;
+
+	int mCurrentGun = 0;
 
 };
