@@ -9,7 +9,7 @@
 ATGunBox::ATGunBox()
 {
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
-	SetRootComponent(BoxComponent);
+	BoxComponent->SetupAttachment(RootComponent);
 
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ATGunBox::OnBeginOverlap);
 

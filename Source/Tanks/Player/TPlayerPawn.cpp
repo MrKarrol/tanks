@@ -14,7 +14,7 @@ ATPlayerPawn::ATPlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
-	SetRootComponent(BoxComponent);
+	BoxComponent->SetupAttachment(RootComponent);
 
 	BodyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("BodyMeshComponent");
 	BodyMeshComponent->SetupAttachment(BoxComponent);
