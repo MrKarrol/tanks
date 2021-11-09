@@ -42,11 +42,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
 		float FireSpeed = 1.f;
 
-private:
-	FTimerHandle mFireTimerHandle;
-
-private:
+protected:
 	int mCurrentAmmo = Ammo;
 	int mCurrentAlternateAmmo = AlternateAmmo;
+
+private:
+	FTimerHandle mFireTimerHandle;
 
 };

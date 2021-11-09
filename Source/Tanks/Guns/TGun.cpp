@@ -44,7 +44,7 @@ void ATGun::AlternateFire()
 		--mCurrentAlternateAmmo;
 	}
 	else
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need reload")));
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need ammo")));
 }
 
 void ATGun::Reload()
@@ -62,5 +62,5 @@ void ATGun::DoFire()
 		--mCurrentAmmo;
 	}
 	else
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need reload")));
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need ammo")));
 }
