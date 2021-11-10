@@ -1,17 +1,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "Tanks/Core/TPawn.h"
 #include "TPlayerPawn.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
-class ATGun;
 class UArrowComponent;
-class UBoxComponent;
 
 UCLASS()
-class TANKS_API ATPlayerPawn : public APawn
+class TANKS_API ATPlayerPawn : public ATPawn
 {
 	GENERATED_BODY()
 
@@ -23,33 +21,7 @@ public:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
 
-	void StartFire();
-	void StopFire();
-
-	void AlternateFire();
-
-	void Reload();
-
-	void SwapGuns();
-
-	void SetGun(TSubclassOf<ATGun> GunClass);
-
 protected:
-	UPROPERTY(EditAnywhere, Category = "Components")
-		TSubclassOf<ATGun> DefaultGunClassFirst;
-
-	UPROPERTY(EditAnywhere, Category = "Components")
-		TSubclassOf<ATGun> DefaultGunClassSecond;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UBoxComponent* BoxComponent;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UStaticMeshComponent* BodyMeshComponent;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UStaticMeshComponent* TurretMeshComponent;
-
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UArrowComponent* GunPivotLocation;
 
@@ -73,24 +45,13 @@ protected:
 
 	void PerformMovement(float DeltaTime);
 	void PerformTurretRotation();
-	void ChangeGun(TSubclassOf<ATGun> GunClass);
+	USceneComponent* GetGunPivotAttach() const override;
 
 private:
-	UPROPERTY()
-		ATGun* mGun = nullptr;
-
-	UPROPERTY()
-		TSubclassOf<ATGun> GunClassFirst;
-
-	UPROPERTY()
-		TSubclassOf<ATGun> GunClassSecond;
-
 	float mCurrentMoveSpeed = 0.f;
 	float mCurrentRotationSpeed = 0.f;
 
 	float mMoveForwardInput;
 	float mMoveRightInput;
-
-	int mCurrentGun = 0;
 
 };

@@ -46,6 +46,8 @@ protected:
 	int mCurrentAmmo = Ammo;
 	int mCurrentAlternateAmmo = AlternateAmmo;
 
+	bool mIsFiring = false;
+
 private:
 	FTimerHandle mFireTimerHandle;
 

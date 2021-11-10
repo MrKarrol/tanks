@@ -17,22 +17,23 @@ ATGun::ATGun()
 
 void ATGun::StartFire()
 {
-	if (mCurrentAmmo)
+	if (mCurrentAmmo && !mIsFiring)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Start fire")));
 		GetWorld()->GetTimerManager().SetTimer(mFireTimerHandle, this, &ATGun::DoFire, FireSpeed, true, 0.f);
+		mIsFiring = true;
 	}
 	else
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need reload")));
-
 }
 
 void ATGun::StopFire()
 {
-	if (mCurrentAmmo)
+	if (mIsFiring)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Stop fire")));
 		GetWorld()->GetTimerManager().ClearTimer(mFireTimerHandle);
+		mIsFiring = false;
 	}
 }
 
