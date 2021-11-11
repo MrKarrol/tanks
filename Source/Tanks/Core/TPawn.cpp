@@ -143,6 +143,7 @@ void ATPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
 		FActorSpawnParameters spawnParams;
 		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		mGun = GetWorld()->SpawnActor<ATGun>(GunClass, GetGunPivotAttach()->GetComponentLocation(), GetGunPivotAttach()->GetComponentRotation(), spawnParams);
+		mGun->bInfiniteAmmo = bInfiniteAmmo;
 		mGun->AttachToComponent(GetGunPivotAttach(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Gun");
 	}
 }

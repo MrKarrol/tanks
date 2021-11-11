@@ -9,15 +9,14 @@ void ATProjectileGun::DoFire()
 {
 	if (DefaultProjectileClass)
 	{
-		if (mCurrentAmmo)
+		if (CanFire())
 		{
+			Super::DoFire();
+
 			FActorSpawnParameters spawn_params;
 			spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			auto projectile = GetWorld()->SpawnActor<ATProjectile>(DefaultProjectileClass, FirePointComponent->GetComponentLocation(), FirePointComponent->GetComponentRotation(), spawn_params);
-			--mCurrentAmmo;
 		}
-		else
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need ammo")));
 	}
 	else
 	{

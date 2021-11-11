@@ -18,6 +18,7 @@ public:
 	void StopFire();
 	void AlternateFire();
 	void Reload();
+	bool CanFire() const;
 
 protected:
 	virtual void DoFire();
@@ -38,6 +39,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
 		int AlternateAmmo = 5;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
+		bool bInfiniteAmmo = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
 		float FireSpeed = 1.f;

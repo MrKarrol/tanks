@@ -12,6 +12,8 @@ ATEnemyTurret::ATEnemyTurret()
 
 	GunPivotLocation = CreateDefaultSubobject<UArrowComponent>("GunPivotLocation");
 	GunPivotLocation->SetupAttachment(BodyMeshComponent);
+
+	bInfiniteAmmo = true;
 }
 
 void ATEnemyTurret::Tick(float DeltaTime)
@@ -33,10 +35,9 @@ bool ATEnemyTurret::TargetIsVisible() const
 
 void ATEnemyTurret::ProcessTargeting(float DeltaTime)
 {
-	if (TargetIsVisible())
+	if (GetTarget() && TargetIsVisible())
 	{
 		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(GetGunPivotAttach()->GetComponentLocation(), GetTarget()->GetActorLocation());
-		//GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("%s"), *result.Location.ToString()));
 		new_turret_direction.Roll = GetGunPivotAttach()->GetComponentRotation().Roll;
 		new_turret_direction.Pitch = GetGunPivotAttach()->GetComponentRotation().Pitch;
 		GetGunPivotAttach()->SetWorldRotation(new_turret_direction);

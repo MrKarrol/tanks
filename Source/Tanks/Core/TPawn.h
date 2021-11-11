@@ -40,6 +40,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* BodyMeshComponent;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
+		bool bInfiniteAmmo = false;
+
 protected:
 	virtual void BeginPlay() override;
 

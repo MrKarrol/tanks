@@ -17,21 +17,17 @@ ATGun::ATGun()
 
 void ATGun::StartFire()
 {
-	if (mCurrentAmmo && !mIsFiring)
+	if ((mCurrentAmmo || bInfiniteAmmo) && !mIsFiring)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Start fire")));
 		GetWorld()->GetTimerManager().SetTimer(mFireTimerHandle, this, &ATGun::DoFire, FireSpeed, true, 0.f);
 		mIsFiring = true;
 	}
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need reload")));
 }
 
 void ATGun::StopFire()
 {
 	if (mIsFiring)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Stop fire")));
 		GetWorld()->GetTimerManager().ClearTimer(mFireTimerHandle);
 		mIsFiring = false;
 	}
@@ -39,29 +35,20 @@ void ATGun::StopFire()
 
 void ATGun::AlternateFire()
 {
-	if (mCurrentAlternateAmmo)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Dynamite")));
-		--mCurrentAlternateAmmo;
-	}
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need ammo")));
 }
 
 void ATGun::Reload()
 {
 	mCurrentAmmo = Ammo;
 	mCurrentAlternateAmmo = AlternateAmmo;
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Reloaded")));
+}
+
+bool ATGun::CanFire() const
+{
+	return mCurrentAmmo || bInfiniteAmmo;
 }
 
 void ATGun::DoFire()
 {
-	if (mCurrentAmmo)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Fire")));
-		--mCurrentAmmo;
-	}
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Need ammo")));
+	--mCurrentAmmo;
 }
