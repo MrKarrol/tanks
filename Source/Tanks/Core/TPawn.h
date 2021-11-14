@@ -30,6 +30,8 @@ public:
 
 	void SetGun(TSubclassOf<ATGun> GunClass);
 
+	virtual USceneComponent* GetGunPivotAttach() const;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<ATGun> DefaultGunClassFirst;
@@ -53,7 +55,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void ChangeGun(TSubclassOf<ATGun> GunClass);
-	virtual USceneComponent* GetGunPivotAttach() const;
+	
 	virtual void OnDie();
 
 protected:

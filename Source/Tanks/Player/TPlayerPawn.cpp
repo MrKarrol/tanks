@@ -1,9 +1,8 @@
 #include "TPlayerPawn.h"
 
+#include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/ArrowComponent.h"
-#include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "Tanks/Tanks.h"
 #include "Tanks/Guns/TGun.h"
@@ -12,10 +11,7 @@
 ATPlayerPawn::ATPlayerPawn()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	GunPivotLocation = CreateDefaultSubobject<UArrowComponent>("GunPivotLocation");
-	GunPivotLocation->SetupAttachment(BodyMeshComponent);
-
+	
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
 	SpringArmComponent->SetupAttachment(BodyMeshComponent);
 
@@ -35,20 +31,7 @@ void ATPlayerPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
 	mGun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
 }
 
-void ATPlayerPawn::PerformMovement(float DeltaTime)
-{
-	// move
-	mCurrentMoveSpeed = FMath::FInterpConstantTo(mCurrentMoveSpeed, MoveSpeed * FMath::Abs(mMoveForwardInput), DeltaTime, MoveAcceleration);
-	const FVector position_delta = GetActorForwardVector() * mCurrentMoveSpeed * DeltaTime * FMath::Sign(mMoveForwardInput);
-	SetActorLocation(GetActorLocation() + position_delta);
-	
-	// rotation
-	mCurrentRotationSpeed = FMath::FInterpConstantTo(mCurrentRotationSpeed, RotationSpeed * FMath::Abs(mMoveRightInput), DeltaTime, RotationAcceleration);
-	const FRotator rotation_delta = FRotator(0.f, mCurrentRotationSpeed * DeltaTime * FMath::Sign(mMoveRightInput), 0.f);
-	SetActorRotation(GetActorRotation() + rotation_delta);
-}
-
-void ATPlayerPawn::PerformTurretRotation()
+void ATPlayerPawn::CalculateTurretRotation()
 {
 	if (auto controller = Cast<APlayerController>(GetController()))
 	{
@@ -56,27 +39,20 @@ void ATPlayerPawn::PerformTurretRotation()
 		controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, result);
 		if (result.Location.IsNearlyZero())
 			return;
-		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(GunPivotLocation->GetComponentLocation(), result.Location);
+		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(GetGunPivotAttach()->GetComponentLocation(), result.Location);
 		//GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("%s"), *result.Location.ToString()));
-		new_turret_direction.Roll = GunPivotLocation->GetComponentRotation().Roll;
-		new_turret_direction.Pitch = GunPivotLocation->GetComponentRotation().Pitch;
-		GunPivotLocation->SetWorldRotation(new_turret_direction);
-	}
+		new_turret_direction.Roll = GetGunPivotAttach()->GetComponentRotation().Roll;
+		new_turret_direction.Pitch = GetGunPivotAttach()->GetComponentRotation().Pitch;
 	
-}
-
-USceneComponent* ATPlayerPawn::GetGunPivotAttach() const
-{
-	return GunPivotLocation;
+		AddTankTurretRotationInput(new_turret_direction);
+	}
 }
 
 void ATPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	PerformMovement(DeltaTime);
-	PerformTurretRotation();
-
+	CalculateTurretRotation();
 	ShowScore();
 }
 
@@ -100,12 +76,12 @@ void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ATPlayerPawn::MoveForward(float AxisValue)
 {
-	mMoveForwardInput = AxisValue;
+	AddTankMovementInput(AxisValue);
 }
 
 void ATPlayerPawn::MoveRight(float AxisValue)
 {
-	mMoveRightInput = AxisValue;
+	AddTankRotationInput(AxisValue);
 }
 
 void ATPlayerPawn::TakeScore(float Score)

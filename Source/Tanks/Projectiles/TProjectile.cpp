@@ -20,6 +20,9 @@ ATProjectile::ATProjectile()
 
 void ATProjectile::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
+	if (ImpactResult.GetActor() == GetOwner())
+		return;
+
 	if (OnHitSomethingDelegate.IsBound())
 		OnHitSomethingDelegate.Execute(ImpactResult.GetActor());
 	Destroy();

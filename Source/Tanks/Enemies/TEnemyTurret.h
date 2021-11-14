@@ -32,12 +32,16 @@ protected:
 	USceneComponent* GetGunPivotAttach() const override;
 	void OnDie() override;
 
+
 public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UArrowComponent* GunPivotLocation;
 
-public:
 	UPROPERTY(EditAnywhere, Category = "Score")
 		float Score = 25.f;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
+		TEnumAsByte<ETraceTypeQuery> TraceChannel;
 
 };
