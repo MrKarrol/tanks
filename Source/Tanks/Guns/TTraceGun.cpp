@@ -7,15 +7,16 @@
 
 void ATTraceGun::DoFire()
 {
+	Super::DoFire();
+
 	if (CanFire())
 	{
-		Super::DoFire();
-
 		FVector start_trace = FirePointComponent->GetComponentLocation();
 		FVector end_trace = start_trace + FirePointComponent->GetForwardVector() * TraceDistance;
 		EDrawDebugTrace::Type drawDebugType = bDrawDebugTrace ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 		FHitResult result;
-		UKismetSystemLibrary::LineTraceSingle(GetWorld(), start_trace, end_trace, TraceChannel, false, {}, drawDebugType, result, true);
+		TArray <AActor*> ignore_list = {GetOwner()};
+		UKismetSystemLibrary::LineTraceSingle(GetWorld(), start_trace, end_trace, TraceChannel, false, ignore_list, drawDebugType, result, true);
 		if (result.GetActor())
 			ProceedDamage(result.GetActor());
 	}

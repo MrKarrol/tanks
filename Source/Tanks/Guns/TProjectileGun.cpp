@@ -7,12 +7,12 @@
 
 void ATProjectileGun::DoFire()
 {
+	Super::DoFire();
+
 	if (DefaultProjectileClass)
 	{
 		if (CanFire())
 		{
-			Super::DoFire();
-
 			FActorSpawnParameters spawn_params;
 			spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 

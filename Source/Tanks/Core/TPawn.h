@@ -28,7 +28,7 @@ public:
 
 	void SwapGuns();
 
-	void SetGun(TSubclassOf<ATGun> GunClass);
+	virtual void SetGun(TSubclassOf<ATGun> GunClass);
 
 	virtual USceneComponent* GetGunPivotAttach() const;
 

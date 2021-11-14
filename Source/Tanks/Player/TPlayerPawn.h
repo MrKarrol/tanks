@@ -18,8 +18,9 @@ class TANKS_API ATPlayerPawn : public ATTankPawn, public IIScoreTaker
 
 public:
 	ATPlayerPawn();
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void Tick(float DeltaTime) override;
+	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetGun(TSubclassOf<ATGun> GunClass) override;
 
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
@@ -29,9 +30,10 @@ public:
 	//= End IScoreTaker interface
 
 protected:
-	virtual void BeginPlay() override;
-	virtual void ChangeGun(TSubclassOf<ATGun> GunClass) override;
+	void BeginPlay() override;
+	void ChangeGun(TSubclassOf<ATGun> GunClass) override;
 	void CalculateTurretRotation();
+	void OnShot(ATGun*);
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")

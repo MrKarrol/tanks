@@ -1,6 +1,8 @@
 #include "TGun.h"
 
 #include "Components/ArrowComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
 #include "Tanks/Interfaces/IDamageTaker.h"
 #include "Tanks/Interfaces/IScorable.h"
 
@@ -14,6 +16,12 @@ ATGun::ATGun()
 
 	FirePointComponent = CreateDefaultSubobject<UArrowComponent>("FirePoint");
 	FirePointComponent->SetupAttachment(GunMesh);
+
+	FireFXComponent = CreateDefaultSubobject<UParticleSystemComponent>("FireFXComponent");
+	FireFXComponent->SetupAttachment(FirePointComponent);
+
+	FireAudioComponent = CreateDefaultSubobject<UAudioComponent>("FireAudioComponent");
+	FireAudioComponent->SetupAttachment(FirePointComponent);
 }
 
 void ATGun::StartFire()
@@ -51,7 +59,15 @@ bool ATGun::CanFire() const
 
 void ATGun::DoFire()
 {
-	--mCurrentAmmo;
+	if (CanFire())
+	{
+		--mCurrentAmmo;
+
+		FireFXComponent->ActivateSystem();
+		FireAudioComponent->Play();
+
+		OnShotDelegate.Broadcast(this);
+	}
 }
 
 void ATGun::OnGetScore(float Score)

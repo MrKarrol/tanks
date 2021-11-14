@@ -5,7 +5,8 @@
 #include "TGun.generated.h"
 
 class UArrowComponent;
-
+class UParticleSystemComponent;
+class UAudioComponent;
 
 UCLASS()
 class ATGun : public AActor
@@ -13,6 +14,7 @@ class ATGun : public AActor
 	GENERATED_BODY()
 
 	DECLARE_DELEGATE_OneParam(FOnGetScoreDelegate, float/*Score*/);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnShotDelegate, ATGun * /*Score*/);
 public:
 	ATGun();
 
@@ -35,6 +37,15 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UArrowComponent* FirePointComponent;
 
+	UPROPERTY(VisibleAnywhere)
+		UParticleSystemComponent* FireFXComponent;
+
+	UPROPERTY(VisibleAnywhere)
+		UAudioComponent* FireAudioComponent;
+
+	UPROPERTY(VisibleAnywhere)
+		TSubclassOf<UCameraShakeBase> ShotCameraShake;
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
 		int Ammo = 100;
@@ -52,6 +63,7 @@ public:
 		float FireSpeed = 1.f;
 
 	FOnGetScoreDelegate OnGetScoreDelegate;
+	FOnShotDelegate OnShotDelegate;
 
 protected:
 	void OnGetScore(float Score);

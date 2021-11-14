@@ -74,6 +74,17 @@ void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("SwapGuns", EInputEvent::IE_Pressed, this, &ATPlayerPawn::SwapGuns);
 }
 
+void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
+{
+	if (mGun)
+		mGun->OnShotDelegate.RemoveAll(this);
+
+	Super::SetGun(GunClass);
+
+	if (mGun)
+		mGun->OnShotDelegate.AddUObject(this, &ATPlayerPawn::OnShot);
+}
+
 void ATPlayerPawn::MoveForward(float AxisValue)
 {
 	AddTankMovementInput(AxisValue);
@@ -87,4 +98,13 @@ void ATPlayerPawn::MoveRight(float AxisValue)
 void ATPlayerPawn::TakeScore(float Score)
 {
 	TotalScore += Score;
+}
+
+void ATPlayerPawn::OnShot(ATGun*)
+{
+	auto controller = Cast<APlayerController>(GetController());
+	if (mGun && mGun->ShotCameraShake && controller)
+	{
+		controller->ClientStartCameraShake(mGun->ShotCameraShake);
+	}
 }

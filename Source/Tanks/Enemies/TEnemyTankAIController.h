@@ -35,4 +35,9 @@ protected:
 	UPROPERTY()
 		ATEnemyTank* TankPawn;
 
+	int32 TargetPatrolPointIndex = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
+		float AcceptanceRadius = 50.f;
+
 };

@@ -65,6 +65,19 @@ bool ATEnemyTankAIController::CanFire() const
 
 void ATEnemyTankAIController::ProcessMovement(float DeltaTime)
 {
+	if (!TankPawn || TankPawn->PatrolPoints.Num() <= TargetPatrolPointIndex)
+		return;
+	if (FVector::Dist(TankPawn->GetActorLocation(), TankPawn->PatrolPoints[TargetPatrolPointIndex]->GetActorLocation()) <= AcceptanceRadius)
+	{
+		++TargetPatrolPointIndex;
+		if (!TankPawn->PatrolPoints.IsValidIndex(TargetPatrolPointIndex))
+			TargetPatrolPointIndex = 0;
+	}
+
+	const auto next_point_location = TankPawn->PatrolPoints[TargetPatrolPointIndex]->GetActorLocation();
+	const auto rotation_to_point = UKismetMathLibrary::FindLookAtRotation(TankPawn->GetActorLocation(), next_point_location);
+	TankPawn->AddTankMovementInput(1.f);
+	TankPawn->AddTankRotationInput(rotation_to_point.Yaw);
 }
 
 
