@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
+#include "Tanks/Components/THealthComponent.h"
 
 
 ATEnemyTurret::ATEnemyTurret()
@@ -23,6 +24,12 @@ void ATEnemyTurret::Tick(float DeltaTime)
 	ProcessTargeting(DeltaTime);
 }
 
+void ATEnemyTurret::TakeDamage(const FTDamageData& data)
+{
+	if (data.Instigator != this)
+		HealthComponent->SetHealth(HealthComponent->GetHealth() - data.Damage);
+}
+
 AActor* ATEnemyTurret::GetTarget() const
 {
 	return UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -40,6 +47,7 @@ void ATEnemyTurret::ProcessTargeting(float DeltaTime)
 		FRotator new_turret_direction = UKismetMathLibrary::FindLookAtRotation(GetGunPivotAttach()->GetComponentLocation(), GetTarget()->GetActorLocation());
 		new_turret_direction.Roll = GetGunPivotAttach()->GetComponentRotation().Roll;
 		new_turret_direction.Pitch = GetGunPivotAttach()->GetComponentRotation().Pitch;
+
 		GetGunPivotAttach()->SetWorldRotation(new_turret_direction);
 		StartFire();
 	}
@@ -50,4 +58,11 @@ void ATEnemyTurret::ProcessTargeting(float DeltaTime)
 USceneComponent* ATEnemyTurret::GetGunPivotAttach() const
 {
 	return GunPivotLocation;
+}
+
+void ATEnemyTurret::OnDie()
+{
+	Super::OnDie();
+
+	Destroy();
 }

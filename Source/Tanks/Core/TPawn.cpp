@@ -1,5 +1,6 @@
 #include "TPawn.h"
 
+#include "Tanks/Components/THealthComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
@@ -16,6 +17,9 @@ ATPawn::ATPawn()
 
 	BodyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("BodyMeshComponent");
 	BodyMeshComponent->SetupAttachment(BoxComponent);
+
+	HealthComponent = CreateDefaultSubobject<UTHealthComponent>("HealthComponent");
+	HealthComponent->OnDieDelegate.AddUObject(this, &ATPawn::OnDie);
 }
 
 void ATPawn::BeginPlay()
@@ -26,6 +30,14 @@ void ATPawn::BeginPlay()
 	GunClassSecond = DefaultGunClassSecond;
 
 	ChangeGun(GunClassFirst);
+}
+
+void ATPawn::Destroyed()
+{
+	Super::Destroyed();
+
+	if (mGun)
+		mGun->Destroy();
 }
 
 void ATPawn::StartFire()
@@ -145,10 +157,16 @@ void ATPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
 		mGun = GetWorld()->SpawnActor<ATGun>(GunClass, GetGunPivotAttach()->GetComponentLocation(), GetGunPivotAttach()->GetComponentRotation(), spawnParams);
 		mGun->bInfiniteAmmo = bInfiniteAmmo;
 		mGun->AttachToComponent(GetGunPivotAttach(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Gun");
+		
 	}
 }
 
 USceneComponent* ATPawn::GetGunPivotAttach() const
 {
 	return BodyMeshComponent;
+}
+
+void ATPawn::OnDie()
+{
+	
 }

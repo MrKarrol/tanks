@@ -20,18 +20,13 @@ ATGunBox::ATGunBox()
 void ATGunBox::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("%s"), *BoxComponent->GetComponentLocation().ToString()));
 }
 
 void ATGunBox::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogT, Error, TEXT("Collision"));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Got 0")));
 	ATPlayerPawn* player_pawn = Cast<ATPlayerPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (player_pawn == OtherActor)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Got")));
 		player_pawn->SetGun(GunClass);
 	}
 }

@@ -66,8 +66,6 @@ void ATPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("%s"), *GunPivotLocation->GetComponentLocation().ToString()));
-
 	PerformMovement(DeltaTime);
 	PerformTurretRotation();
 }

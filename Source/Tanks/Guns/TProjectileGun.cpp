@@ -15,7 +15,10 @@ void ATProjectileGun::DoFire()
 
 			FActorSpawnParameters spawn_params;
 			spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			auto projectile = GetWorld()->SpawnActor<ATProjectile>(DefaultProjectileClass, FirePointComponent->GetComponentLocation(), FirePointComponent->GetComponentRotation(), spawn_params);
+
+			auto projectile_rotation = FirePointComponent->GetComponentRotation();
+			projectile_rotation.Yaw += FMath::RandRange(-FireAccuracy, FireAccuracy);
+			auto projectile = GetWorld()->SpawnActor<ATProjectile>(DefaultProjectileClass, FirePointComponent->GetComponentLocation(), projectile_rotation, spawn_params);
 		}
 	}
 	else

@@ -7,6 +7,7 @@
 class ATGun;
 class UArrowComponent;
 class UBoxComponent;
+class UTHealthComponent;
 
 UCLASS()
 class TANKS_API ATPawn : public APawn
@@ -16,6 +17,8 @@ class TANKS_API ATPawn : public APawn
 public:
 	ATPawn();
 	
+	void Destroyed() override;
+
 	void StartFire();
 	void StopFire();
 
@@ -43,11 +46,15 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
 		bool bInfiniteAmmo = false;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UTHealthComponent* HealthComponent;
+
 protected:
 	virtual void BeginPlay() override;
 
 	void ChangeGun(TSubclassOf<ATGun> GunClass);
 	virtual USceneComponent* GetGunPivotAttach() const;
+	virtual void OnDie();
 
 protected:
 	UPROPERTY()

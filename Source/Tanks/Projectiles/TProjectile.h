@@ -6,6 +6,7 @@
 
 
 class UProjectileMovementComponent;
+class UCapsuleComponent;
 
 UCLASS()
 class ATProjectile : public AActor
@@ -15,11 +16,17 @@ public:
 	ATProjectile();
 
 public:
+	UPROPERTY(EditAnywhere)
+		UCapsuleComponent* CapsuleComponent;
+
 	UPROPERTY(VisibleAnywhere)
 		USkeletalMeshComponent* Mesh;
 
 	UPROPERTY(VisibleAnywhere)
 		UProjectileMovementComponent* MovementComponent;
+
+	UPROPERTY(EditAnywhere)
+		float Damage = 25.f;
 
 protected:
 	UFUNCTION()

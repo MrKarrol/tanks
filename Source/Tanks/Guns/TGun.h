@@ -35,7 +35,7 @@ public:
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-		int Ammo = 10;
+		int Ammo = 100;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
 		int AlternateAmmo = 5;

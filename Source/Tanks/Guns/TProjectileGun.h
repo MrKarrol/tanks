@@ -16,6 +16,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf <ATProjectile> DefaultProjectileClass;
 
+	UPROPERTY(EditAnywhere, Category = "Fire")
+		float FireAccuracy = 2.f;
+
 protected:
 	void DoFire() override;
 
