@@ -9,7 +9,9 @@ void UTHealthComponent::SetHealth(float NewHealth)
 		Health = FMath::Max(0.f, NewHealth);
 		OnHealthChangedDelegate.Broadcast(Health, OldHealth);
 		if (FMath::IsNearlyZero(Health))
+		{
 			OnDieDelegate.Broadcast();
+		}
 	}
 }
 

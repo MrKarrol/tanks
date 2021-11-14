@@ -11,6 +11,8 @@ UCLASS()
 class ATGun : public AActor
 {
 	GENERATED_BODY()
+
+	DECLARE_DELEGATE_OneParam(FOnGetScoreDelegate, float/*Score*/);
 public:
 	ATGun();
 
@@ -44,7 +46,16 @@ public:
 		bool bInfiniteAmmo = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
+		float Damage = 25.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
 		float FireSpeed = 1.f;
+
+	FOnGetScoreDelegate OnGetScoreDelegate;
+
+protected:
+	void OnGetScore(float Score);
+	void ProceedDamage(AActor* damaged_actor);
 
 protected:
 	int mCurrentAmmo = Ammo;

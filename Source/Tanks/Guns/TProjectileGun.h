@@ -11,8 +11,6 @@ class ATProjectileGun : public ATGun
 {
 	GENERATED_BODY()
 public:
-	
-public:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf <ATProjectile> DefaultProjectileClass;
 

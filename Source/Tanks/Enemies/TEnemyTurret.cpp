@@ -30,6 +30,16 @@ void ATEnemyTurret::TakeDamage(const FTDamageData& data)
 		HealthComponent->SetHealth(HealthComponent->GetHealth() - data.Damage);
 }
 
+bool ATEnemyTurret::IsDead() const
+{
+	return FMath::IsNearlyZero(HealthComponent->GetHealth());
+}
+
+float ATEnemyTurret::GetScore()
+{
+	return Score;
+}
+
 AActor* ATEnemyTurret::GetTarget() const
 {
 	return UGameplayStatics::GetPlayerPawn(GetWorld(), 0);

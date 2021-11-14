@@ -19,6 +19,7 @@ void ATProjectileGun::DoFire()
 			auto projectile_rotation = FirePointComponent->GetComponentRotation();
 			projectile_rotation.Yaw += FMath::RandRange(-FireAccuracy, FireAccuracy);
 			auto projectile = GetWorld()->SpawnActor<ATProjectile>(DefaultProjectileClass, FirePointComponent->GetComponentLocation(), projectile_rotation, spawn_params);
+			projectile->OnHitSomethingDelegate.BindUObject(this, &ATProjectileGun::ProceedDamage);
 		}
 	}
 	else

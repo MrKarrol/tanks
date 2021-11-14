@@ -2,12 +2,13 @@
 
 #include "Tanks/Core/TPawn.h"
 #include "Tanks/Interfaces/IDamageTaker.h"
+#include "Tanks/Interfaces/IScorable.h"
 #include "TEnemyTurret.generated.h"
 
 class UArrowComponent;
 
 UCLASS()
-class TANKS_API ATEnemyTurret : public ATPawn, public IIDamageTaker
+class TANKS_API ATEnemyTurret : public ATPawn, public IIDamageTaker, public IIScorable
 {
 	GENERATED_BODY()
 public:
@@ -16,7 +17,12 @@ public:
 
 	//= Begin IDamageTaker interface
 	void TakeDamage(const FTDamageData&) override;
+	bool IsDead() const override;
 	//= End IDamageTaker interface
+
+	//= Begin IScorable interface
+	virtual float GetScore() override;
+	//= End IScorable interface
 
 protected:
 	AActor* GetTarget() const;
@@ -29,5 +35,9 @@ protected:
 public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UArrowComponent* GunPivotLocation;
+
+public:
+	UPROPERTY(EditAnywhere, Category = "Score")
+		float Score = 25.f;
 
 };

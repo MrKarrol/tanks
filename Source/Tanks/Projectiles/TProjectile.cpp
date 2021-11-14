@@ -2,7 +2,7 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Tanks/Interfaces/IDamageTaker.h"
+
 
 
 ATProjectile::ATProjectile()
@@ -20,12 +20,7 @@ ATProjectile::ATProjectile()
 
 void ATProjectile::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
-	if (auto damage_taker = Cast<IIDamageTaker>(ImpactResult.GetActor()))
-	{
-		FTDamageData data;
-		data.Damage = Damage;
-		data.Instigator = GetOwner();
-		damage_taker->TakeDamage(data);
-	}
+	if (OnHitSomethingDelegate.IsBound())
+		OnHitSomethingDelegate.Execute(ImpactResult.GetActor());
 	Destroy();
 }

@@ -2,14 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "Tanks/Core/TPawn.h"
+#include "Tanks/Interfaces/IScoreTaker.h"
 #include "TPlayerPawn.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
 class UArrowComponent;
+class ATGun;
+
 
 UCLASS()
-class TANKS_API ATPlayerPawn : public ATPawn
+class TANKS_API ATPlayerPawn : public ATPawn, public IIScoreTaker
 {
 	GENERATED_BODY()
 
@@ -20,6 +23,10 @@ public:
 
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
+
+	//= Begin IScoreTaker interface
+	void TakeScore(float Score) override;
+	//= End IScoreTaker interface
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
@@ -42,10 +49,14 @@ protected:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void ChangeGun(TSubclassOf<ATGun> GunClass) override;
 
 	void PerformMovement(float DeltaTime);
 	void PerformTurretRotation();
 	USceneComponent* GetGunPivotAttach() const override;
+	
+private:
+	void ShowScore() const;
 
 private:
 	float mCurrentMoveSpeed = 0.f;
@@ -53,5 +64,7 @@ private:
 
 	float mMoveForwardInput;
 	float mMoveRightInput;
+
+	float TotalScore = 0.f;
 
 };

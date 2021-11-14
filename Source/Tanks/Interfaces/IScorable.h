@@ -1,23 +1,14 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "IDamageTaker.generated.h"
-
-USTRUCT()
-struct FTDamageData
-{
-	GENERATED_BODY()
-
-	float Damage = 0.f;
-
-	UPROPERTY()
-		AActor* Instigator = nullptr;
-};
+#include "IScorable.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UIDamageTaker : public UInterface
+class UIScorable : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -25,13 +16,11 @@ class UIDamageTaker : public UInterface
 /**
  * 
  */
-class TANKS_API IIDamageTaker
+class TANKS_API IIScorable
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void TakeDamage(const FTDamageData &) = 0;
-	virtual bool IsDead() const = 0;
-
+	virtual float GetScore() = 0;
 };

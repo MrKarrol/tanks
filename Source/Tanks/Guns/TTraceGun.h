@@ -21,9 +21,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
 		bool bDrawDebugTrace = false;
 
-	UPROPERTY(EditAnywhere)
-		float Damage = 25.f;
-
 protected:
 	void DoFire() override;
 

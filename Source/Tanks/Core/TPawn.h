@@ -52,7 +52,7 @@ protected:
 protected:
 	virtual void BeginPlay() override;
 
-	void ChangeGun(TSubclassOf<ATGun> GunClass);
+	virtual void ChangeGun(TSubclassOf<ATGun> GunClass);
 	virtual USceneComponent* GetGunPivotAttach() const;
 	virtual void OnDie();
 

@@ -1,7 +1,8 @@
 #include "TGun.h"
 
 #include "Components/ArrowComponent.h"
-
+#include "Tanks/Interfaces/IDamageTaker.h"
+#include "Tanks/Interfaces/IScorable.h"
 
 ATGun::ATGun()
 {
@@ -51,4 +52,33 @@ bool ATGun::CanFire() const
 void ATGun::DoFire()
 {
 	--mCurrentAmmo;
+}
+
+void ATGun::OnGetScore(float Score)
+{
+	if (OnGetScoreDelegate.IsBound())
+	{
+		OnGetScoreDelegate.Execute(Score);
+	}
+}
+
+void ATGun::ProceedDamage(AActor* damaged_actor)
+{
+	if (auto damage_taker = Cast<IIDamageTaker>(damaged_actor))
+	{
+		FTDamageData data;
+		data.Damage = Damage;
+		data.Instigator = GetOwner();
+		float possible_score{};
+		if (auto scorable = Cast<IIScorable>(damaged_actor))
+			possible_score = scorable->GetScore();
+		damage_taker->TakeDamage(data);
+		if (damage_taker->IsDead())
+		{
+			if (OnGetScoreDelegate.IsBound())
+			{
+				OnGetScoreDelegate.Execute(possible_score);
+			}
+		}
+	}
 }

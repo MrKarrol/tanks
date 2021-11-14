@@ -6,6 +6,7 @@
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "Tanks/Tanks.h"
+#include "Tanks/Guns/TGun.h"
 
 
 ATPlayerPawn::ATPlayerPawn()
@@ -25,6 +26,13 @@ ATPlayerPawn::ATPlayerPawn()
 void ATPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ATPlayerPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
+{
+	Super::ChangeGun(GunClass);
+
+	mGun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
 }
 
 void ATPlayerPawn::PerformMovement(float DeltaTime)
@@ -68,6 +76,13 @@ void ATPlayerPawn::Tick(float DeltaTime)
 
 	PerformMovement(DeltaTime);
 	PerformTurretRotation();
+
+	ShowScore();
+}
+
+void ATPlayerPawn::ShowScore() const
+{
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, FString::Printf(TEXT("Score: %f"), TotalScore));
 }
 
 void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -91,4 +106,9 @@ void ATPlayerPawn::MoveForward(float AxisValue)
 void ATPlayerPawn::MoveRight(float AxisValue)
 {
 	mMoveRightInput = AxisValue;
+}
+
+void ATPlayerPawn::TakeScore(float Score)
+{
+	TotalScore += Score;
 }

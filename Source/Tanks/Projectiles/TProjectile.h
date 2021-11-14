@@ -12,6 +12,8 @@ UCLASS()
 class ATProjectile : public AActor
 {
 	GENERATED_BODY()
+
+	DECLARE_DELEGATE_OneParam(FOnHitSomethingDelegate, AActor * /*Target*/);
 public:
 	ATProjectile();
 
@@ -25,8 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UProjectileMovementComponent* MovementComponent;
 
-	UPROPERTY(EditAnywhere)
-		float Damage = 25.f;
+	FOnHitSomethingDelegate OnHitSomethingDelegate;
 
 protected:
 	UFUNCTION()
