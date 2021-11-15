@@ -4,6 +4,7 @@
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Tanks/Components/THealthComponent.h"
+#include "Tanks/Guns/TGun.h"
 
 
 ATEnemyTurret::ATEnemyTurret()
@@ -47,7 +48,18 @@ AActor* ATEnemyTurret::GetTarget() const
 
 bool ATEnemyTurret::TargetIsVisible() const
 {
-	return GetTarget() != nullptr;
+	if (GetTarget())
+	{
+		const FVector start_trace = mGun->GetActorLocation();
+		const FVector end_trace = GetTarget()->GetActorLocation();
+		FHitResult result;
+
+		const EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::Type::None;
+		UKismetSystemLibrary::LineTraceSingle(GetWorld(), start_trace, end_trace, TraceChannel, false, {}, DrawDebugType, result, true);
+
+		return !result.bBlockingHit;
+	}
+	return false;
 }
 
 void ATEnemyTurret::ProcessTargeting(float DeltaTime)
