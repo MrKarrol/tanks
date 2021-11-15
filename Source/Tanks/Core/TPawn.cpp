@@ -3,6 +3,8 @@
 #include "Tanks/Components/THealthComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "Tanks/Guns/TGun.h"
@@ -20,6 +22,19 @@ ATPawn::ATPawn()
 
 	HealthComponent = CreateDefaultSubobject<UTHealthComponent>("HealthComponent");
 	HealthComponent->OnDieDelegate.AddUObject(this, &ATPawn::OnDie);
+	HealthComponent->OnDamageDelegate.AddUObject(this, &ATPawn::OnDamage);
+
+	DamageFXComponent = CreateDefaultSubobject<UParticleSystemComponent>("DamageFXComponent");
+	DamageFXComponent->SetupAttachment(BodyMeshComponent);
+
+	DamageAudioComponent = CreateDefaultSubobject<UAudioComponent>("DamageAudioComponent");
+	DamageAudioComponent->SetupAttachment(BodyMeshComponent);
+
+	DieFXComponent = CreateDefaultSubobject<UParticleSystemComponent>("DieFXComponent");
+	DieFXComponent->SetupAttachment(BodyMeshComponent);
+
+	DieAudioComponent = CreateDefaultSubobject<UAudioComponent>("DieAudioComponent");
+	DieAudioComponent->SetupAttachment(BodyMeshComponent);
 }
 
 void ATPawn::BeginPlay()
@@ -38,6 +53,22 @@ void ATPawn::Destroyed()
 
 	if (mGun)
 		mGun->Destroy();
+}
+
+void ATPawn::TakeDamage(const FTDamageData& data)
+{
+	if (data.Instigator != this)
+		HealthComponent->SetHealth(HealthComponent->GetHealth() - data.Damage);
+}
+
+bool ATPawn::IsDead() const
+{
+	return FMath::IsNearlyZero(HealthComponent->GetHealth());
+}
+
+float ATPawn::GetScore()
+{
+	return Score;
 }
 
 void ATPawn::StartFire()
@@ -157,6 +188,7 @@ void ATPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
 		mGun = GetWorld()->SpawnActor<ATGun>(GunClass, GetGunPivotAttach()->GetComponentLocation(), GetGunPivotAttach()->GetComponentRotation(), spawnParams);
 		mGun->bInfiniteAmmo = bInfiniteAmmo;
 		mGun->AttachToComponent(GetGunPivotAttach(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Gun");
+		mGun->SetOwner(this);
 	}
 }
 
@@ -167,5 +199,13 @@ USceneComponent* ATPawn::GetGunPivotAttach() const
 
 void ATPawn::OnDie()
 {
-	
+	DieFXComponent->ActivateSystem();
+	DieAudioComponent->Play();
+}
+
+void ATPawn::OnDamage()
+{
+	DamageFXComponent->ActivateSystem();
+	GetWorld()->GetTimerManager().SetTimer(mDamageTimerHandle, DamageFXComponent, &UParticleSystemComponent::DeactivateSystem, 2.f, false, 0.f);
+	DamageAudioComponent->Play();
 }

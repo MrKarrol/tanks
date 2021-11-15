@@ -95,9 +95,9 @@ void ATPlayerPawn::MoveRight(float AxisValue)
 	AddTankRotationInput(AxisValue);
 }
 
-void ATPlayerPawn::TakeScore(float Score)
+void ATPlayerPawn::TakeScore(float InScore)
 {
-	TotalScore += Score;
+	TotalScore += InScore;
 }
 
 void ATPlayerPawn::OnShot(ATGun*)

@@ -12,6 +12,10 @@ void UTHealthComponent::SetHealth(float NewHealth)
 		{
 			OnDieDelegate.Broadcast();
 		}
+		else
+		{
+			OnDamageDelegate.Broadcast();
+		}
 	}
 }
 

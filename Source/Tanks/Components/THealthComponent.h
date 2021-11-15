@@ -12,12 +12,14 @@ class UTHealthComponent : public UActorComponent
 
 	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedDelegate, float/*NewHealth*/, float/*OldHealth*/);
 	DECLARE_MULTICAST_DELEGATE(FOnDieDelegate);
+	DECLARE_MULTICAST_DELEGATE(FOnDamageDelegate);
 public:
 	void SetHealth(float Health);
 	float GetHealth() const;
 
 	FOnHealthChangedDelegate OnHealthChangedDelegate;
 	FOnDieDelegate OnDieDelegate;
+	FOnDamageDelegate OnDamageDelegate;
 
 protected:
 	UPROPERTY(EditAnywhere)

@@ -5,3 +5,10 @@ ATEnemyTank::ATEnemyTank()
 {
 	bInfiniteAmmo = true;
 }
+
+void ATEnemyTank::OnDie()
+{
+	Super::OnDie();
+
+	Destroy();
+}
