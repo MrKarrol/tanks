@@ -3,7 +3,7 @@
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-
+#include "Tanks/Meta/TPatrolPoint.h"
 #include "Tanks/Enemies/TEnemyTank.h"
 
 
@@ -76,8 +76,9 @@ void ATEnemyTankAIController::ProcessMovement(float DeltaTime)
 
 	const auto next_point_location = TankPawn->PatrolPoints[TargetPatrolPointIndex]->GetActorLocation();
 	const auto rotation_to_point = UKismetMathLibrary::FindLookAtRotation(TankPawn->GetActorLocation(), next_point_location);
+	const auto rotation_delta = (rotation_to_point - TankPawn->GetActorRotation()).GetNormalized();
 	TankPawn->AddTankMovementInput(1.f);
-	TankPawn->AddTankRotationInput(rotation_to_point.Yaw);
+	TankPawn->AddTankRotationInput(rotation_delta.Yaw);
 }
 
 

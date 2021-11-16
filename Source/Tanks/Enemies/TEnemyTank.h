@@ -2,10 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Tanks/Core/TTankPawn.h"
-#include "Tanks/Meta/TPatrolPoint.h"
-
 #include "TEnemyTank.generated.h"
 
+class ATPatrolPoint;
 
 UCLASS()
 class TANKS_API ATEnemyTank : public ATTankPawn
@@ -15,15 +14,11 @@ class TANKS_API ATEnemyTank : public ATTankPawn
 public:
 	ATEnemyTank();
 
-
-
 protected:
 	void OnDie() override;
 
 public:
 	UPROPERTY(EditAnywhere)
 		TArray<ATPatrolPoint*> PatrolPoints;
-
-
 
 };

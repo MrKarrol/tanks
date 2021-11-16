@@ -65,12 +65,12 @@ void ATTankPawn::Tick(float DeltaTime)
 
 void ATTankPawn::AddTankMovementInput(float MoveDelta)
 {
-	mCachedMoveDelta = MoveDelta;
+	mCachedMoveDelta = FMath::Clamp(MoveDelta, -1.f, 1.f);
 }
 
 void ATTankPawn::AddTankRotationInput(float RotationDelta)
 {
-	mCachedRotationDelta = RotationDelta;
+	mCachedRotationDelta = FMath::Clamp(RotationDelta, -1.f, 1.f);
 }
 
 void ATTankPawn::AddTankTurretRotationInput(FRotator RotationDelta)

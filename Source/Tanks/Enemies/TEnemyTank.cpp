@@ -1,5 +1,7 @@
 #include "TEnemyTank.h"
 
+#include "Tanks/Meta/TPatrolPoint.h"
+
 
 ATEnemyTank::ATEnemyTank()
 {
