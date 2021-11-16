@@ -206,6 +206,6 @@ void ATPawn::OnDie()
 void ATPawn::OnDamage()
 {
 	DamageFXComponent->ActivateSystem();
-	GetWorld()->GetTimerManager().SetTimer(mDamageTimerHandle, DamageFXComponent, &UParticleSystemComponent::DeactivateSystem, 2.f, false, 0.f);
+	GetWorld()->GetTimerManager().SetTimer(mDamageTimerHandle, DamageFXComponent, &UParticleSystemComponent::DeactivateSystem, 10.f, false, 0.f);
 	DamageAudioComponent->Play();
 }

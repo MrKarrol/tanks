@@ -1,44 +1,62 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "Tanks/Interfaces/IDamageTaker.h"
+#include "Tanks/Interfaces/IScorable.h"
 #include "TTankSpawner.generated.h"
 
 class ATPatrolPoint;
 class ATEnemyTank;
 class UBoxComponent;
 class UArrowComponent;
+class UTHealthComponent;
 
 UCLASS()
-class ATTankSpawner : public AActor
+class ATTankSpawner : public AActor, public IIScorable, public IIDamageTaker
 {
 	GENERATED_BODY()
 public:
 	ATTankSpawner();
 	void BeginPlay() override;
 
+	//= Begin IDamageTaker interface
+	void TakeDamage(const FTDamageData&) override;
+	bool IsDead() const override;
+	//= End IDamageTaker interface
+
+	//= Begin IScorable interface
+	float GetScore() override;
+	//= End IScorable interface
+
 protected:
 	void SpawnTank();
 
+	virtual void OnDie();
+	virtual void OnDamage();
+
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UBoxComponent* BoxComponent;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		USkeletalMeshComponent* MeshComponent;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UArrowComponent* SpawnPointComponent;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UTHealthComponent* HealthComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 		TArray<ATPatrolPoint*> PatrolPoints;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawn")
 		TSubclassOf<ATEnemyTank> DefaultTankClass;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawn")
 		float SpawnRate = 2.f;
-
-protected:
-	FTimerHandle SpawnTimeHandler;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Score")
+		float Score = 200.f;
 
 };

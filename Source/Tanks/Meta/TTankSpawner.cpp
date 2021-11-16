@@ -2,6 +2,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Tanks/Components/THealthComponent.h"
 #include "Tanks/Meta/TPatrolPoint.h"
 #include "Tanks/Enemies/TEnemyTank.h"
 
@@ -14,13 +15,18 @@ ATTankSpawner::ATTankSpawner()
 	MeshComponent->SetupAttachment(BoxComponent);
 
 	SpawnPointComponent = CreateDefaultSubobject<UArrowComponent>("SpawnPointComponent");
-	SpawnPointComponent->SetupAttachment(MeshComponent);
+	SpawnPointComponent->SetupAttachment(BoxComponent);
+
+	HealthComponent = CreateDefaultSubobject<UTHealthComponent>("HealthComponent");
+	HealthComponent->OnDieDelegate.AddUObject(this, &ATTankSpawner::OnDie);
+	HealthComponent->OnDamageDelegate.AddUObject(this, &ATTankSpawner::OnDamage);
 }
 
 void ATTankSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FTimerHandle SpawnTimeHandler;
 	GetWorldTimerManager().SetTimer(SpawnTimeHandler, this, &ATTankSpawner::SpawnTank, SpawnRate, true);
 }
 
@@ -34,4 +40,30 @@ void ATTankSpawner::SpawnTank()
 		this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	tank->PatrolPoints = PatrolPoints;
 	tank->FinishSpawning(SpawnPointComponent->GetComponentTransform());
+}
+
+void ATTankSpawner::TakeDamage(const FTDamageData& data)
+{
+	if (data.Instigator != this)
+		HealthComponent->SetHealth(HealthComponent->GetHealth() - data.Damage);
+}
+
+bool ATTankSpawner::IsDead() const
+{
+	return FMath::IsNearlyZero(HealthComponent->GetHealth());
+}
+
+float ATTankSpawner::GetScore()
+{
+	return Score;
+}
+
+void ATTankSpawner::OnDie()
+{
+	GetWorldTimerManager().ClearAllTimersForObject(this);
+	Destroy();
+}
+
+void ATTankSpawner::OnDamage()
+{
 }

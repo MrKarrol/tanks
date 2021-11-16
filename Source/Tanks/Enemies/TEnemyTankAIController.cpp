@@ -65,7 +65,7 @@ bool ATEnemyTankAIController::CanFire() const
 
 void ATEnemyTankAIController::ProcessMovement(float DeltaTime)
 {
-	if (!TankPawn || TankPawn->PatrolPoints.Num() <= TargetPatrolPointIndex)
+	if (!TankPawn || TankPawn->PatrolPoints.Num() <= TargetPatrolPointIndex || !TankPawn->PatrolPoints[TargetPatrolPointIndex])
 		return;
 	if (FVector::Dist(TankPawn->GetActorLocation(), TankPawn->PatrolPoints[TargetPatrolPointIndex]->GetActorLocation()) <= AcceptanceRadius)
 	{
