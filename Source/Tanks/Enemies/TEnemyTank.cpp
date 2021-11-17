@@ -1,6 +1,7 @@
 #include "TEnemyTank.h"
 
 #include "Tanks/Meta/TPatrolPoint.h"
+#include "Components/AudioComponent.h"
 
 
 ATEnemyTank::ATEnemyTank()

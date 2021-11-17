@@ -3,6 +3,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Tanks/Components/THealthComponent.h"
+#include "Tanks/Core/GameModes/TFactoryBattleGameMode.h"
 #include "Tanks/Meta/TPatrolPoint.h"
 #include "Tanks/Enemies/TEnemyTank.h"
 
@@ -25,6 +26,11 @@ ATTankSpawner::ATTankSpawner()
 void ATTankSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (auto game_mode = Cast<ATFactoryBattleGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		game_mode->RegisterSpawner(this);
+	}
 
 	FTimerHandle SpawnTimeHandler;
 	GetWorldTimerManager().SetTimer(SpawnTimeHandler, this, &ATTankSpawner::SpawnTank, SpawnRate, true);

@@ -2,6 +2,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Tanks/Core/GameModes/TFactoryBattleGameMode.h"
 #include "Tanks/Player/TPlayerPawn.h"
 
 
@@ -16,7 +17,11 @@ void ATMapPortal::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetPortalEnabled(false);
+	SetPortalEnabled(bPortalEnabled);
+	if (auto game_mode = Cast<ATFactoryBattleGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		game_mode->OnEndFactoryBattleDelegate.AddUObject(this, &ATMapPortal::OnEndFactoryBattle);
+	}
 }
 
 void ATMapPortal::SetPortalEnabled(bool bEnabled)
@@ -39,5 +44,10 @@ void ATMapPortal::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 
 void ATMapPortal::LoadMap()
 {
-	UGameplayStatics::OpenLevel(this, MapName);
+	UGameplayStatics::OpenLevel(this, *WorldToLoad.GetAssetName());
+}
+
+void ATMapPortal::OnEndFactoryBattle()
+{
+	SetPortalEnabled(true);
 }

@@ -35,6 +35,7 @@ ATPawn::ATPawn()
 
 	DieAudioComponent = CreateDefaultSubobject<UAudioComponent>("DieAudioComponent");
 	DieAudioComponent->SetupAttachment(BodyMeshComponent);
+	DieAudioComponent->bStopWhenOwnerDestroyed = false;
 }
 
 void ATPawn::BeginPlay()
@@ -199,7 +200,7 @@ USceneComponent* ATPawn::GetGunPivotAttach() const
 
 void ATPawn::OnDie()
 {
-	DieFXComponent->ActivateSystem();
+	DieFXComponent->ActivateSystem(true);
 	DieAudioComponent->Play();
 }
 

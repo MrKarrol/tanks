@@ -28,6 +28,7 @@ protected:
 							const FHitResult& SweepResult);
 
 	void LoadMap();
+	void OnEndFactoryBattle();
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -35,7 +36,7 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere)
-		FName MapName;
+		TSoftObjectPtr<UWorld> WorldToLoad;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bPortalEnabled = false;
