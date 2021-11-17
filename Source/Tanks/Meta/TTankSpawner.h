@@ -47,6 +47,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UTHealthComponent* HealthComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		USkeletalMesh* MeshAfterDestroying;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Effects")
+		UParticleSystemComponent* SpawnFXComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Effects")
+		UAudioComponent* SpawnAudioComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Effects")
+		UParticleSystemComponent* DieFXComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Effects")
+		UAudioComponent* DieAudioComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 		TArray<ATPatrolPoint*> PatrolPoints;
 
@@ -58,5 +73,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Score")
 		float Score = 200.f;
+
+protected:
+	FTimerHandle mSpawnTimerHandle;
+	float bScoreTaken = false;
 
 };

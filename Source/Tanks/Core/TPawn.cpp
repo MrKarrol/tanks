@@ -200,13 +200,13 @@ USceneComponent* ATPawn::GetGunPivotAttach() const
 
 void ATPawn::OnDie()
 {
-	DieFXComponent->ActivateSystem(true);
+	DieFXComponent->ActivateSystem();
 	DieAudioComponent->Play();
 }
 
 void ATPawn::OnDamage()
 {
 	DamageFXComponent->ActivateSystem();
-	GetWorld()->GetTimerManager().SetTimer(mDamageTimerHandle, DamageFXComponent, &UParticleSystemComponent::DeactivateSystem, 10.f, false, 0.f);
+	GetWorld()->GetTimerManager().SetTimer(mDamageTimerHandle, DamageFXComponent, &UParticleSystemComponent::DeactivateSystem, 1.f, false, 1.f);
 	DamageAudioComponent->Play();
 }

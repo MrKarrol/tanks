@@ -3,6 +3,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Tanks/Components/THealthComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
 #include "Tanks/Core/GameModes/TFactoryBattleGameMode.h"
 #include "Tanks/Meta/TPatrolPoint.h"
 #include "Tanks/Enemies/TEnemyTank.h"
@@ -21,6 +23,19 @@ ATTankSpawner::ATTankSpawner()
 	HealthComponent = CreateDefaultSubobject<UTHealthComponent>("HealthComponent");
 	HealthComponent->OnDieDelegate.AddUObject(this, &ATTankSpawner::OnDie);
 	HealthComponent->OnDamageDelegate.AddUObject(this, &ATTankSpawner::OnDamage);
+
+	SpawnFXComponent = CreateDefaultSubobject<UParticleSystemComponent>("SpawnFXComponent");
+	SpawnFXComponent->SetupAttachment(SpawnPointComponent);
+
+	SpawnAudioComponent = CreateDefaultSubobject<UAudioComponent>("SpawnAudioComponent");
+	SpawnAudioComponent->SetupAttachment(SpawnPointComponent);
+
+	DieFXComponent = CreateDefaultSubobject<UParticleSystemComponent>("DieFXComponent");
+	DieFXComponent->SetupAttachment(MeshComponent);
+
+	DieAudioComponent = CreateDefaultSubobject<UAudioComponent>("DieAudioComponent");
+	DieAudioComponent->SetupAttachment(MeshComponent);
+	DieAudioComponent->bStopWhenOwnerDestroyed = false; // it will play sound if MeshAfterDestroying was not set
 }
 
 void ATTankSpawner::BeginPlay()
@@ -41,6 +56,11 @@ void ATTankSpawner::SpawnTank()
 	if (!DefaultTankClass)
 		return;
 
+	SpawnFXComponent->ActivateSystem();
+	SpawnAudioComponent->Play();
+	GetWorldTimerManager().SetTimer(mSpawnTimerHandle, SpawnFXComponent,
+		&UParticleSystemComponent::DeactivateSystem, 1.f, false, 1.f);
+
 	auto tank = GetWorld()->SpawnActorDeferred<ATEnemyTank>(DefaultTankClass, 
 		SpawnPointComponent->GetComponentTransform(), 
 		this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
@@ -50,6 +70,8 @@ void ATTankSpawner::SpawnTank()
 
 void ATTankSpawner::TakeDamage(const FTDamageData& data)
 {
+	if (IsDead())
+		return;
 	if (data.Instigator != this)
 		HealthComponent->SetHealth(HealthComponent->GetHealth() - data.Damage);
 }
@@ -61,13 +83,26 @@ bool ATTankSpawner::IsDead() const
 
 float ATTankSpawner::GetScore()
 {
-	return Score;
+	if (!bScoreTaken)
+	{
+		bScoreTaken = true;
+		return Score;
+	}
+	return 0.f;
 }
 
 void ATTankSpawner::OnDie()
 {
 	GetWorldTimerManager().ClearAllTimersForObject(this);
-	Destroy();
+
+	DieFXComponent->ActivateSystem();
+	DieAudioComponent->Play();
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Dead")));
+	if (MeshAfterDestroying)
+		MeshComponent->SetSkeletalMesh(MeshAfterDestroying);
+	else
+		Destroy();
 }
 
 void ATTankSpawner::OnDamage()
