@@ -37,6 +37,10 @@ protected:
 	void CalculateTopDownTurretRotation();
 	void CalculateThirdViewTurretRotation(float DeltaTime);
 	void OnShot(ATGun*);
+	void OnDie() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnPawnDied();
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")

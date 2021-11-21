@@ -35,6 +35,8 @@ void ATPlayerPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
 {
 	Super::ChangeGun(GunClass);
 
+	if (mGun)
+		mGun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
 	DefineCameraView(mGun);
 }
 
@@ -135,7 +137,6 @@ void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
 	if (mGun)
 	{
 		mGun->OnShotDelegate.RemoveAll(this);
-		mGun->OnGetScoreDelegate.Unbind();
 	}
 
 	Super::SetGun(GunClass);
@@ -143,7 +144,6 @@ void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
 	if (mGun)
 	{
 		mGun->OnShotDelegate.AddUObject(this, &ATPlayerPawn::OnShot);
-		mGun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
 	}
 }
 
@@ -179,4 +179,9 @@ void ATPlayerPawn::OnShot(ATGun*)
 	{
 		controller->ClientStartCameraShake(mGun->ShotCameraShake);
 	}
+}
+
+void ATPlayerPawn::OnDie()
+{
+	OnPawnDied();
 }
