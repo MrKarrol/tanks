@@ -1,7 +1,19 @@
 #include "TRadialProjectile.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
 
+
+ATRadialProjectile::ATRadialProjectile()
+{
+	DieFXComponent = CreateDefaultSubobject<UParticleSystemComponent>("DieFXComponent");
+	DieFXComponent->SetupAttachment(Mesh);
+
+	DieAudioComponent = CreateDefaultSubobject<UAudioComponent>("DieAudioComponent");
+	DieAudioComponent->SetupAttachment(Mesh);
+	DieAudioComponent->bStopWhenOwnerDestroyed = false;
+}
 
 void ATRadialProjectile::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
@@ -32,5 +44,9 @@ void ATRadialProjectile::OnBounce(const FHitResult& ImpactResult, const FVector&
 			}
 		}
 	}
+
+	DieFXComponent->ActivateSystem();
+	DieAudioComponent->Play();
+
 	Destroy();
 }
