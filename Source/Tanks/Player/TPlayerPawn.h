@@ -42,6 +42,15 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite,	Category = "Components")
 		UCameraComponent* CameraComponent;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		USpringArmComponent* SpringArmThirdViewComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UCameraComponent* CameraThirdViewComponent;
+
+private:
+	void DefineCameraView(ATGun*);
+
 private:
 	void ShowScore() const;
 

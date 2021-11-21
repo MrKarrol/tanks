@@ -61,6 +61,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
 		float FireSpeed = 1.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
+		bool NeedThirdView = false;
+
 	FOnGetScoreDelegate OnGetScoreDelegate;
 	FOnShotDelegate OnShotDelegate;
 

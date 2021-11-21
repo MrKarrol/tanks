@@ -17,6 +17,13 @@ ATPlayerPawn::ATPlayerPawn()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	SpringArmThirdViewComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmThirdViewComponent");
+	SpringArmThirdViewComponent->SetupAttachment(BodyMeshComponent);
+
+	CameraThirdViewComponent = CreateDefaultSubobject<UCameraComponent>("CameraThirdViewComponent");
+	CameraThirdViewComponent->SetupAttachment(SpringArmThirdViewComponent);
+	CameraThirdViewComponent->Deactivate();
 }
 
 void ATPlayerPawn::BeginPlay()
@@ -28,7 +35,7 @@ void ATPlayerPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
 {
 	Super::ChangeGun(GunClass);
 
-	mGun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
+	DefineCameraView(mGun);
 }
 
 void ATPlayerPawn::CalculateTurretRotation()
@@ -56,6 +63,20 @@ void ATPlayerPawn::Tick(float DeltaTime)
 	ShowScore();
 }
 
+void ATPlayerPawn::DefineCameraView(ATGun* gun)
+{
+	if (gun->NeedThirdView)
+	{
+		CameraComponent->Deactivate();
+		CameraThirdViewComponent->Activate();
+	}
+	else
+	{
+		CameraThirdViewComponent->Deactivate();
+		CameraComponent->Activate();
+	}
+}
+
 void ATPlayerPawn::ShowScore() const
 {
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, FString::Printf(TEXT("Score: %f"), TotalScore));
@@ -77,12 +98,18 @@ void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
 {
 	if (mGun)
+	{
 		mGun->OnShotDelegate.RemoveAll(this);
+		mGun->OnGetScoreDelegate.Unbind();
+	}
 
 	Super::SetGun(GunClass);
 
 	if (mGun)
+	{
 		mGun->OnShotDelegate.AddUObject(this, &ATPlayerPawn::OnShot);
+		mGun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
+	}
 }
 
 void ATPlayerPawn::MoveForward(float AxisValue)
