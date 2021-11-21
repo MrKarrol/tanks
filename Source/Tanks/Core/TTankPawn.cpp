@@ -75,5 +75,7 @@ void ATTankPawn::AddTankRotationInput(float RotationDelta)
 
 void ATTankPawn::AddTankTurretRotationInput(FRotator RotationDelta)
 {
+	if (!RotationDelta.IsNearlyZero())
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("%s"), *RotationDelta.ToString()));
 	mCachedTurretRotationDelta = RotationDelta;
 }

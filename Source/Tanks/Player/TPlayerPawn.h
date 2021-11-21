@@ -24,6 +24,8 @@ public:
 
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
+	void MoveTurretUp(float AxisValue);
+	void MoveTurretRight(float AxisValue);
 
 	//= Begin IScoreTaker interface
 	void TakeScore(float Score) override;
@@ -32,7 +34,8 @@ public:
 protected:
 	void BeginPlay() override;
 	void ChangeGun(TSubclassOf<ATGun> GunClass) override;
-	void CalculateTurretRotation();
+	void CalculateTopDownTurretRotation();
+	void CalculateThirdViewTurretRotation(float DeltaTime);
 	void OnShot(ATGun*);
 
 protected:
@@ -56,5 +59,14 @@ private:
 
 private:
 	float TotalScore = 0.f;
+	bool bInThirdPersonView = false;
+
+protected:
+	float mCurrentTurretUpSpeed = 0.f;
+	float mCurrentTurretRotationSpeed = 0.f;
+
+private:
+	float mCachedTurretUpDelta;
+	float mCachedTurretRotationDelta;
 
 };

@@ -98,7 +98,6 @@ void ATTankSpawner::OnDie()
 	DieFXComponent->ActivateSystem();
 	DieAudioComponent->Play();
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, FString::Printf(TEXT("Dead")));
 	if (MeshAfterDestroying)
 		MeshComponent->SetSkeletalMesh(MeshAfterDestroying);
 	else

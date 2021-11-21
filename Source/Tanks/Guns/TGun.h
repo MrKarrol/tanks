@@ -64,6 +64,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
 		bool NeedThirdView = false;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed", meta = (EditCondition = "NeedThirdView"))
+		float TurretRotationSpeed = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed", meta = (EditCondition = "NeedThirdView"))
+		float TurretRotationAcceleration = 64.f;
+
 	FOnGetScoreDelegate OnGetScoreDelegate;
 	FOnShotDelegate OnShotDelegate;
 
