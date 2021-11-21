@@ -53,7 +53,7 @@ void ATTankSpawner::BeginPlay()
 
 void ATTankSpawner::SpawnTank()
 {
-	if (!DefaultTankClass)
+	if (!DefaultTankClass || !CanSpawn)
 		return;
 
 	SpawnFXComponent->ActivateSystem();

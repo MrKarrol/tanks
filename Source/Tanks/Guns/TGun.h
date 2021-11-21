@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-
 #include "TGun.generated.h"
 
 class UArrowComponent;

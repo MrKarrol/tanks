@@ -4,7 +4,6 @@
 #include "Components/CapsuleComponent.h"
 
 
-
 ATProjectile::ATProjectile()
 {
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComponent");
@@ -17,6 +16,7 @@ ATProjectile::ATProjectile()
 	MovementComponent->bShouldBounce = true;
 	MovementComponent->OnProjectileBounce.AddDynamic(this, &ATProjectile::OnBounce);
 }
+
 
 void ATProjectile::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {

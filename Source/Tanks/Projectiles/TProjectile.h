@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-
 #include "TProjectile.generated.h"
 
 
@@ -31,6 +30,6 @@ public:
 
 protected:
 	UFUNCTION()
-		void OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
+		virtual void OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 
 };

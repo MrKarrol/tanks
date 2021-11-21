@@ -63,6 +63,9 @@ public:
 		UAudioComponent* DieAudioComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+		bool CanSpawn = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 		TArray<ATPatrolPoint*> PatrolPoints;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawn")
