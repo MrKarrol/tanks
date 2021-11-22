@@ -1,6 +1,7 @@
 #include "TPlayerPawn.h"
 
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
+#include "Tanks/Components/THealthComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "DrawDebugHelpers.h"
@@ -114,6 +115,7 @@ void ATPlayerPawn::DefineCameraView(ATGun* gun)
 void ATPlayerPawn::ShowScore() const
 {
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, FString::Printf(TEXT("Score: %f"), TotalScore));
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, FString::Printf(TEXT("Health: %f"), HealthComponent->GetHealth()));
 }
 
 void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -170,6 +172,11 @@ void ATPlayerPawn::MoveTurretRight(float AxisValue)
 void ATPlayerPawn::TakeScore(float InScore)
 {
 	TotalScore += InScore;
+}
+
+void ATPlayerPawn::Heal(float HealthGain)
+{
+	HealthComponent->SetHealth(HealthComponent->GetHealth() + HealthGain);
 }
 
 void ATPlayerPawn::OnShot(ATGun*)

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Tanks/Core/TTankPawn.h"
 #include "Tanks/Interfaces/IScoreTaker.h"
+#include "Tanks/Interfaces/IHealable.h"
 #include "TPlayerPawn.generated.h"
 
 class UCameraComponent;
@@ -12,7 +13,7 @@ class ATGun;
 
 
 UCLASS()
-class TANKS_API ATPlayerPawn : public ATTankPawn, public IIScoreTaker
+class TANKS_API ATPlayerPawn : public ATTankPawn, public IIScoreTaker, public IIHealable
 {
 	GENERATED_BODY()
 
@@ -30,6 +31,10 @@ public:
 	//= Begin IScoreTaker interface
 	void TakeScore(float Score) override;
 	//= End IScoreTaker interface
+
+	//= Begin IHealable interface
+	void Heal(float Health) override;
+	//= End IHealable interface
 
 protected:
 	void BeginPlay() override;

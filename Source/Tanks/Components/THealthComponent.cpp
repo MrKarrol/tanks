@@ -1,25 +1,34 @@
 #include "THealthComponent.h"
 
 
+UTHealthComponent::UTHealthComponent()
+{
+	mCurrentHealth = MaxHealth;
+}
+
 void UTHealthComponent::SetHealth(float NewHealth)
 {
-	if (Health > 0)
+	if (mCurrentHealth > 0.f)
 	{
-		float OldHealth = Health;
-		Health = FMath::Max(0.f, NewHealth);
-		OnHealthChangedDelegate.Broadcast(Health, OldHealth);
-		if (Health <= 0.f)
+		float OldHealth = mCurrentHealth;
+		mCurrentHealth = FMath::Clamp(0.f, NewHealth, MaxHealth);
+		OnHealthChangedDelegate.Broadcast(mCurrentHealth, OldHealth);
+		if (FMath::IsNearlyZero(mCurrentHealth))
 		{
 			OnDieDelegate.Broadcast();
 		}
-		else if (Health < OldHealth)
+		else if (mCurrentHealth < OldHealth)
 		{
 			OnDamageDelegate.Broadcast();
+		}
+		else if (mCurrentHealth > OldHealth)
+		{
+			OnHealDelegate.Broadcast();
 		}
 	}
 }
 
 float UTHealthComponent::GetHealth() const
 {
-	return Health;
+	return mCurrentHealth;
 }

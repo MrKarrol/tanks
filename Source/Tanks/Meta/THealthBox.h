@@ -2,19 +2,19 @@
 
 #include "GameFramework/Actor.h"
 
-#include "TAmmoBox.generated.h"
+#include "THealthBox.generated.h"
 
 
 class UBoxComponent;
 
 UCLASS()
-class ATAmmoBox : public AActor
+class ATHealthBox : public AActor
 {
 public:
 	GENERATED_BODY()
 
 public:
-	ATAmmoBox();
+	ATHealthBox();
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Components")
@@ -22,6 +22,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Components")
 		USkeletalMeshComponent* MeshComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Heal")
+		float HealthGain = 500.f;
 
 protected:
 	UFUNCTION()
