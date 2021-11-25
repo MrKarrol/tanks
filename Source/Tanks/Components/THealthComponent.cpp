@@ -1,8 +1,10 @@
 #include "THealthComponent.h"
 
 
-UTHealthComponent::UTHealthComponent()
+void UTHealthComponent::BeginPlay()
 {
+	Super::BeginPlay();
+
 	mCurrentHealth = MaxHealth;
 }
 
@@ -11,7 +13,7 @@ void UTHealthComponent::SetHealth(float NewHealth)
 	if (mCurrentHealth > 0.f)
 	{
 		float OldHealth = mCurrentHealth;
-		mCurrentHealth = FMath::Clamp(0.f, NewHealth, MaxHealth);
+		mCurrentHealth = FMath::Clamp(NewHealth, 0.f, MaxHealth);
 		OnHealthChangedDelegate.Broadcast(mCurrentHealth, OldHealth);
 		if (FMath::IsNearlyZero(mCurrentHealth))
 		{

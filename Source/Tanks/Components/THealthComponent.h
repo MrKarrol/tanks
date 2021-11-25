@@ -15,7 +15,7 @@ class UTHealthComponent : public UActorComponent
 	DECLARE_MULTICAST_DELEGATE(FOnDamageDelegate);
 	DECLARE_MULTICAST_DELEGATE(FOnHealDelegate);
 public:
-	UTHealthComponent();
+	void BeginPlay() override;
 
 	void SetHealth(float Health);
 	float GetHealth() const;
