@@ -6,6 +6,7 @@
 
 ATFactoryBattleGameMode::ATFactoryBattleGameMode()
 {
+	
 }
 
 void ATFactoryBattleGameMode::RegisterSpawner(ATTankSpawner* Spawner)

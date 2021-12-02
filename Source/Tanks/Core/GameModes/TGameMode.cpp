@@ -31,5 +31,7 @@ void ATGameMode::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass)
 void ATGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
 	ChangeMenuWidget(StartingWidgetClass);
 }
