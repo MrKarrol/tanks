@@ -22,10 +22,10 @@ protected:
 
 public:
 	ATPlayerController();
-	void SetupInputComponent() override;
+	virtual void SetupInputComponent() override;
 
 protected:
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
 	
