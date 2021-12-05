@@ -15,13 +15,13 @@ class TANKS_API ATTankPawn : public ATPawn
 
 public:
 	ATTankPawn();
-	void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override;
 
 	void AddTankMovementInput(float MoveDelta);
 	void AddTankRotationInput(float RotationDelta);
 	void AddTankTurretRotationInput(FRotator RotationDelta);
 
-	USceneComponent* GetGunPivotAttach() const override;
+	virtual USceneComponent* GetGunPivotAttach() const override;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")

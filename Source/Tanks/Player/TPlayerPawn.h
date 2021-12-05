@@ -17,11 +17,13 @@ class TANKS_API ATPlayerPawn : public ATTankPawn, public IIScoreTaker, public II
 {
 	GENERATED_BODY()
 
+	DECLARE_DELEGATE_OneParam(FOnChangeScoreDelegate, int32 /*score*/);
 public:
 	ATPlayerPawn();
-	void Tick(float DeltaTime) override;
-	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	void SetGun(TSubclassOf<ATGun> GunClass) override;
+	virtual void Tick(float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	virtual void SetGun(TSubclassOf<ATGun> GunClass) override;
 
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
@@ -29,20 +31,22 @@ public:
 	void MoveTurretRight(float AxisValue);
 
 	//= Begin IScoreTaker interface
-	void TakeScore(float Score) override;
+	virtual void TakeScore(float Score) override;
 	//= End IScoreTaker interface
 
+	FOnChangeScoreDelegate OnChangeScoreDelegate;
+
 	//= Begin IHealable interface
-	void Heal(float Health) override;
+	virtual void Heal(float Health) override;
 	//= End IHealable interface
 
 protected:
-	void BeginPlay() override;
-	void ChangeGun(TSubclassOf<ATGun> GunClass) override;
+	virtual void BeginPlay() override;
+	virtual void SwapGuns() override;
 	void CalculateTopDownTurretRotation();
 	void CalculateThirdViewTurretRotation(float DeltaTime);
-	void OnShot(ATGun*);
-	void OnDie() override;
+	void OnShot(ATGun*) const;
+	virtual void OnDie() override;
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void OnPawnDied();
@@ -63,18 +67,14 @@ protected:
 private:
 	void DefineCameraView(ATGun*);
 
-private:
-	void ShowScore() const;
-
-private:
-	float TotalScore = 0.f;
-	bool bInThirdPersonView = false;
-
 protected:
 	float mCurrentTurretUpSpeed = 0.f;
 	float mCurrentTurretRotationSpeed = 0.f;
 
 private:
+	float TotalScore = 0.f;
+	bool bInThirdPersonView = false;
+
 	float mCachedTurretUpDelta;
 	float mCachedTurretRotationDelta;
 

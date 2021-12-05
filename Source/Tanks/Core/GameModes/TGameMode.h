@@ -9,20 +9,17 @@ UCLASS()
 class TANKS_API ATGameMode : public AGameMode
 {
 	GENERATED_BODY()
+	DECLARE_MULTICAST_DELEGATE_OneParam(FEnemiesNumberChangedDelegate, int32 /*enemies number*/);
+	
 public:
-	ATGameMode();
-	virtual ~ATGameMode() override;
+	virtual void Tick(float DeltaSeconds) override;
 
-	UFUNCTION(BlueprintCallable, Category = "UMG Game")
-	void ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidgetClass);
+	FEnemiesNumberChangedDelegate OnEnemiesNumberChangedDelegate;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Enemies")
+	TArray<TSubclassOf<AActor>> EnemiesClasses; 
+	
 protected:
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UMG Game")
-	TSubclassOf<UUserWidget> StartingWidgetClass;
-
-	UPROPERTY()
-	UUserWidget* CurrentWidget;
 
 };

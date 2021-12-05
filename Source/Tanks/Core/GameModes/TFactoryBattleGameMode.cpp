@@ -1,13 +1,10 @@
 #include "TFactoryBattleGameMode.h"
 
+
 #include "Tanks/Meta/TTankSpawner.h"
 #include "Tanks/Components/THealthComponent.h"
+#include "Tanks/Widgets/THUD.h"
 
-
-ATFactoryBattleGameMode::ATFactoryBattleGameMode()
-{
-	
-}
 
 void ATFactoryBattleGameMode::RegisterSpawner(ATTankSpawner* Spawner)
 {
@@ -17,6 +14,16 @@ void ATFactoryBattleGameMode::RegisterSpawner(ATTankSpawner* Spawner)
 		Spawner->HealthComponent->OnDieDelegate.AddUObject(this, &ATFactoryBattleGameMode::OnSpawnerDie);
 	}
 
+}
+
+void ATFactoryBattleGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (auto hud = Cast<ATHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
+	{
+		hud->ShowSideWidget(ESideWidgetType::SWT_PlayerState, 1);
+	}
 }
 
 void ATFactoryBattleGameMode::OnSpawnerDie()

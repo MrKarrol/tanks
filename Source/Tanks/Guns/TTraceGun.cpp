@@ -11,9 +11,9 @@ void ATTraceGun::DoFire()
 
 	if (CanFire())
 	{
-		FVector start_trace = FirePointComponent->GetComponentLocation();
-		FVector end_trace = start_trace + FirePointComponent->GetForwardVector() * TraceDistance;
-		EDrawDebugTrace::Type drawDebugType = bDrawDebugTrace ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
+		const FVector start_trace = FirePointComponent->GetComponentLocation();
+		const FVector end_trace = start_trace + FirePointComponent->GetForwardVector() * TraceDistance;
+		const EDrawDebugTrace::Type drawDebugType = bDrawDebugTrace ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 		FHitResult result;
 		TArray <AActor*> ignore_list;
 		GetOwner()->GetAllChildActors(ignore_list, true);

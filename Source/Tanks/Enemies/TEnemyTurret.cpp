@@ -32,9 +32,10 @@ AActor* ATEnemyTurret::GetTarget() const
 
 bool ATEnemyTurret::TargetIsVisible() const
 {
-	if (GetTarget())
+	auto gun = GetCurrentGun();
+	if (gun && GetTarget())
 	{
-		const FVector start_trace = mGun->GetActorLocation();
+		const FVector start_trace = gun->GetActorLocation();
 		const FVector end_trace = GetTarget()->GetActorLocation();
 		FHitResult result;
 

@@ -34,3 +34,8 @@ float UTHealthComponent::GetHealth() const
 {
 	return mCurrentHealth;
 }
+
+float UTHealthComponent::GetMaxHealth() const
+{
+	return MaxHealth;
+}

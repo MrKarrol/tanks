@@ -30,20 +30,25 @@ ATPlayerPawn::ATPlayerPawn()
 void ATPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (auto gun = GetCurrentGun())
+	{
+		gun->OnShotDelegate.AddUObject(this, &ATPlayerPawn::OnShot);
+		gun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
+	}
 }
 
-void ATPlayerPawn::ChangeGun(TSubclassOf<ATGun> GunClass)
+void ATPlayerPawn::SwapGuns()
 {
-	Super::ChangeGun(GunClass);
+	Super::SwapGuns();
 
-	if (mGun)
-		mGun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
-	DefineCameraView(mGun);
+	if (const auto gun = GetCurrentGun())
+		DefineCameraView(gun);
 }
 
 void ATPlayerPawn::CalculateTopDownTurretRotation()
 {
-	if (auto controller = Cast<APlayerController>(GetController()))
+	if (const auto controller = Cast<APlayerController>(GetController()))
 	{
 		FHitResult result;
 		controller->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, result);
@@ -62,9 +67,9 @@ void ATPlayerPawn::CalculateThirdViewTurretRotation(float DeltaTime)
 	FRotator summary_rotation_delta;
 	if (FMath::IsNearlyZero(mCachedTurretUpDelta))
 		mCurrentTurretUpSpeed = 0.f;
-	else
+	else if (const auto gun = GetCurrentGun())
 	{
-		mCurrentTurretUpSpeed = FMath::FInterpConstantTo(mCurrentTurretUpSpeed, mGun->TurretRotationSpeed * FMath::Abs(mCachedTurretUpDelta), DeltaTime, mGun->TurretRotationAcceleration);
+		mCurrentTurretUpSpeed = FMath::FInterpConstantTo(mCurrentTurretUpSpeed, gun->TurretRotationSpeed * FMath::Abs(mCachedTurretUpDelta), DeltaTime, gun->TurretRotationAcceleration);
 		const FRotator rotation_delta = FRotator(mCurrentTurretUpSpeed * DeltaTime * FMath::Sign(mCachedTurretUpDelta), 0.f, 0.f);
 		summary_rotation_delta += rotation_delta;
 		mCachedTurretUpDelta = 0.f;
@@ -72,9 +77,9 @@ void ATPlayerPawn::CalculateThirdViewTurretRotation(float DeltaTime)
 
 	if (FMath::IsNearlyZero(mCachedTurretRotationDelta))
 		mCurrentTurretRotationSpeed = 0.f;
-	else
+	else if (const auto gun = GetCurrentGun())
 	{
-		mCurrentTurretRotationSpeed = FMath::FInterpConstantTo(mCurrentTurretRotationSpeed, mGun->TurretRotationSpeed * FMath::Abs(mCachedTurretRotationDelta), DeltaTime, mGun->TurretRotationAcceleration);
+		mCurrentTurretRotationSpeed = FMath::FInterpConstantTo(mCurrentTurretRotationSpeed, gun->TurretRotationSpeed * FMath::Abs(mCachedTurretRotationDelta), DeltaTime, gun->TurretRotationAcceleration);
 		const FRotator rotation_delta = FRotator(0.f, mCurrentTurretRotationSpeed * DeltaTime * FMath::Sign(mCachedTurretRotationDelta), 0.f);
 		summary_rotation_delta += rotation_delta;
 
@@ -92,8 +97,6 @@ void ATPlayerPawn::Tick(float DeltaTime)
 		CalculateTopDownTurretRotation();
 	else
 		CalculateThirdViewTurretRotation(DeltaTime);
-	
-	ShowScore();
 }
 
 void ATPlayerPawn::DefineCameraView(ATGun* gun)
@@ -110,12 +113,6 @@ void ATPlayerPawn::DefineCameraView(ATGun* gun)
 		CameraComponent->Activate();
 		bInThirdPersonView = false;
 	}
-}
-
-void ATPlayerPawn::ShowScore() const
-{
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, FString::Printf(TEXT("Score: %f"), TotalScore));
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, FString::Printf(TEXT("Health: %f"), HealthComponent->GetHealth()));
 }
 
 void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -136,16 +133,12 @@ void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
 {
-	if (mGun)
-	{
-		mGun->OnShotDelegate.RemoveAll(this);
-	}
-
 	Super::SetGun(GunClass);
 
-	if (mGun)
+	if (auto gun = GetCurrentGun())
 	{
-		mGun->OnShotDelegate.AddUObject(this, &ATPlayerPawn::OnShot);
+		gun->OnShotDelegate.AddUObject(this, &ATPlayerPawn::OnShot);
+		gun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
 	}
 }
 
@@ -172,6 +165,8 @@ void ATPlayerPawn::MoveTurretRight(float AxisValue)
 void ATPlayerPawn::TakeScore(float InScore)
 {
 	TotalScore += InScore;
+	if (OnChangeScoreDelegate.IsBound())
+		OnChangeScoreDelegate.Execute(FMath::CeilToInt(TotalScore));
 }
 
 void ATPlayerPawn::Heal(float HealthGain)
@@ -179,12 +174,13 @@ void ATPlayerPawn::Heal(float HealthGain)
 	HealthComponent->SetHealth(HealthComponent->GetHealth() + HealthGain);
 }
 
-void ATPlayerPawn::OnShot(ATGun*)
+void ATPlayerPawn::OnShot(ATGun*) const
 {
-	auto controller = Cast<APlayerController>(GetController());
-	if (mGun && mGun->ShotCameraShake && controller)
+	const auto controller = Cast<APlayerController>(GetController());
+	const auto gun = GetCurrentGun();
+	if (gun && gun->ShotCameraShake && controller)
 	{
-		controller->ClientStartCameraShake(mGun->ShotCameraShake);
+		controller->ClientStartCameraShake(gun->ShotCameraShake);
 	}
 }
 

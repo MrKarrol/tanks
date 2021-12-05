@@ -14,6 +14,7 @@ class ATGun : public AActor
 
 	DECLARE_DELEGATE_OneParam(FOnGetScoreDelegate, float/*Score*/);
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnShotDelegate, ATGun * /*Score*/);
+	DECLARE_DELEGATE_OneParam(FOnChangeAmmoCapacityDelegate, int32 /*ammo*/);
 public:
 	ATGun();
 
@@ -22,6 +23,9 @@ public:
 	void AlternateFire();
 	void Reload();
 	bool CanFire() const;
+
+public:
+	int32 GetCurrentAmmo() const;
 
 protected:
 	virtual void DoFire();
@@ -47,38 +51,42 @@ public:
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-		int Ammo = 100;
+	int Ammo = 100;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-		int AlternateAmmo = 5;
+	int AlternateAmmo = 5;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-		bool bInfiniteAmmo = false;
+	bool bInfiniteAmmo = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
-		float Damage = 25.f;
+	float Damage = 25.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
-		float FireSpeed = 1.f;
+	float FireSpeed = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
-		bool NeedThirdView = false;
+	bool NeedThirdView = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed", meta = (EditCondition = "NeedThirdView"))
-		float TurretRotationSpeed = 100.f;
+	float TurretRotationSpeed = 100.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed", meta = (EditCondition = "NeedThirdView"))
-		float TurretRotationAcceleration = 64.f;
+	float TurretRotationAcceleration = 64.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun")
+	FString GunName;
 
 	FOnGetScoreDelegate OnGetScoreDelegate;
 	FOnShotDelegate OnShotDelegate;
+	FOnChangeAmmoCapacityDelegate OnChangeAmmoCapacityDelegate;
 
 protected:
 	void OnGetScore(float Score);
 	void ProceedDamage(AActor* damaged_actor);
 
 protected:
-	int mCurrentAmmo = Ammo;
+	int32 m_current_ammo = Ammo;
 	int mCurrentAlternateAmmo = AlternateAmmo;
 
 	bool mIsFiring = false;

@@ -6,7 +6,7 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Tanks/Core/GameModes/TGameMode.h"
+
 
 void UPauseMenuWidget::NativeConstruct()
 {
@@ -26,11 +26,8 @@ void UPauseMenuWidget::NativeConstruct()
 
 void UPauseMenuWidget::OnReturnToGameClicked()
 {
-	if (auto game_mode = Cast<ATGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		game_mode->ChangeMenuWidget(nullptr);
-		UGameplayStatics::SetGamePaused(this, false);
-	}
+	OnNeedToRemove.Execute();
+	UGameplayStatics::SetGamePaused(this, false);
 }
 
 void UPauseMenuWidget::OnMainMenuClicked()

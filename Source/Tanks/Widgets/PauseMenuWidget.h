@@ -2,13 +2,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "Tanks/Widgets/TWidget.h"
 #include "PauseMenuWidget.generated.h"
 
 class UButton;
 
 UCLASS()
-class TANKS_API UPauseMenuWidget : public UUserWidget
+class TANKS_API UPauseMenuWidget : public UTWidget
 {
 	GENERATED_BODY()
 public:

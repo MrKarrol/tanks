@@ -26,7 +26,7 @@ ATGun::ATGun()
 
 void ATGun::StartFire()
 {
-	if ((mCurrentAmmo || bInfiniteAmmo) && !mIsFiring)
+	if ((m_current_ammo || bInfiniteAmmo) && !mIsFiring)
 	{
 		GetWorld()->GetTimerManager().SetTimer(mFireTimerHandle, this, &ATGun::DoFire, FireSpeed, true, 0.f);
 		mIsFiring = true;
@@ -48,20 +48,29 @@ void ATGun::AlternateFire()
 
 void ATGun::Reload()
 {
-	mCurrentAmmo = Ammo;
+	m_current_ammo = Ammo;
+	if (OnChangeAmmoCapacityDelegate.IsBound())
+		OnChangeAmmoCapacityDelegate.Execute(m_current_ammo);
 	mCurrentAlternateAmmo = AlternateAmmo;
 }
 
 bool ATGun::CanFire() const
 {
-	return mCurrentAmmo || bInfiniteAmmo;
+	return m_current_ammo || bInfiniteAmmo;
+}
+
+int32 ATGun::GetCurrentAmmo() const
+{
+	return m_current_ammo;
 }
 
 void ATGun::DoFire()
 {
 	if (CanFire())
 	{
-		--mCurrentAmmo;
+		--m_current_ammo;
+		if (OnChangeAmmoCapacityDelegate.IsBound())
+			OnChangeAmmoCapacityDelegate.Execute(m_current_ammo);
 
 		FireFXComponent->ActivateSystem();
 		FireAudioComponent->Play();
@@ -80,13 +89,13 @@ void ATGun::OnGetScore(float Score)
 
 void ATGun::ProceedDamage(AActor* damaged_actor)
 {
-	if (auto damage_taker = Cast<IIDamageTaker>(damaged_actor))
+	if (const auto damage_taker = Cast<IIDamageTaker>(damaged_actor))
 	{
 		FTDamageData data;
 		data.Damage = Damage;
 		data.Instigator = GetOwner();
 		float possible_score{};
-		if (auto scorable = Cast<IIScorable>(damaged_actor))
+		if (const auto scorable = Cast<IIScorable>(damaged_actor))
 			possible_score = scorable->GetScore();
 		damage_taker->TakeDamage(data);
 		if (damage_taker->IsDead())

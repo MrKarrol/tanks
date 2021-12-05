@@ -19,6 +19,7 @@ public:
 
 	void SetHealth(float Health);
 	float GetHealth() const;
+	float GetMaxHealth() const;
 
 	FOnHealthChangedDelegate OnHealthChangedDelegate;
 	FOnDieDelegate OnDieDelegate;

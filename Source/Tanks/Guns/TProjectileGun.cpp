@@ -20,7 +20,7 @@ void ATProjectileGun::Tick(float DeltaSeconds)
 	if (bUsePredictProjectilePathParams && PredictProjectilePathParams.DrawDebugType != EDrawDebugTrace::None && DefaultProjectileClass)
 	{
 		PredictProjectilePathParams.StartLocation = FirePointComponent->GetComponentLocation();
-		auto projectile_default = DefaultProjectileClass.GetDefaultObject();
+		const auto projectile_default = DefaultProjectileClass.GetDefaultObject();
 		const auto initial_speed = projectile_default->MovementComponent->InitialSpeed;
 		PredictProjectilePathParams.LaunchVelocity = FirePointComponent->GetForwardVector() * initial_speed;
 		PredictProjectilePathParams.OverrideGravityZ = GetWorld()->GetWorldSettings()->GetGravityZ() * projectile_default->MovementComponent->ProjectileGravityScale;
@@ -44,7 +44,7 @@ void ATProjectileGun::DoFire()
 
 			auto projectile_rotation = FirePointComponent->GetComponentRotation();
 			projectile_rotation.Yaw += FMath::RandRange(-FireAccuracy, FireAccuracy);
-			auto projectile = GetWorld()->SpawnActor<ATProjectile>(DefaultProjectileClass, FirePointComponent->GetComponentLocation(), projectile_rotation, spawn_params);
+			const auto projectile = GetWorld()->SpawnActor<ATProjectile>(DefaultProjectileClass, FirePointComponent->GetComponentLocation(), projectile_rotation, spawn_params);
 			projectile->OnHitSomethingDelegate.BindUObject(this, &ATProjectileGun::ProceedDamage);
 		}
 	}
