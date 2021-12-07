@@ -56,6 +56,7 @@ public:
 
 private:
 	void SetupPlayerState();
+	void SetupMiniMap();
 	
 protected:
 	virtual void BeginPlay() override;

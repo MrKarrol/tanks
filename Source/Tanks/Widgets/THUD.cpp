@@ -1,11 +1,16 @@
 ﻿#include "THUD.h"
 
+#include <ThirdParty/CryptoPP/5.6.5/include/config.h>
+
+#include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 #include "Tanks/Widgets/TWidget.h"
 #include "Tanks/Widgets/PlayerStateWidget.h"
 #include "Tanks/Player/TPlayerPawn.h"
 #include "Tanks/Components/THealthComponent.h"
 #include "Tanks/Core/GameModes/TGameMode.h"
 #include "Tanks/Guns/TGun.h"
+#include "Tanks/Meta/TWall.h"
 
 
 ATHUD::ATHUD()
@@ -32,6 +37,9 @@ void ATHUD::BeginPlay()
 void ATHUD::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (showed_side_widgets.Contains(ESideWidgetType::SWT_MiniMap))
+		SetupMiniMap();
 }
 
 void ATHUD::SetupPlayerState()
@@ -69,6 +77,31 @@ void ATHUD::SetupPlayerState()
 			BindGun(gun.Key, gun.Value);
 
 		player->OnGunChangeDelegate.BindLambda(BindGun);
+	}
+}
+
+void ATHUD::SetupMiniMap()
+{
+	TArray<AActor*> walls;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATWall::StaticClass(), walls);
+	if (!walls.Num())
+		return;
+
+	// int32 Xfinal, Yfinal;
+	TArray<TArray<FVector2D>> bounds_to_paint;
+	for (const auto wall : walls)
+	{
+		FVector Origin;
+		FVector BoxExtent;
+		wall->GetActorBounds(false, Origin, BoxExtent, true);
+		auto box = wall->GetComponentsBoundingBox();
+		auto wall_location = wall->GetActorLocation();
+		wall_location.Z += 1000; // debug
+		FVector final_point = wall_location + Origin * BoxExtent;
+		final_point.Z += 1000; // debug
+		DrawDebugBox(GetWorld(), box.GetCenter(), box.GetExtent(), wall->GetActorRotation().Quaternion(), FColor::Red, false, 0.f, 5, 5.f);
+
+		// find coordinates of box extend final points
 	}
 }
 

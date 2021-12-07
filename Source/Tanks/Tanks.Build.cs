@@ -11,6 +11,8 @@ public class Tanks : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "UMG" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "SlateCore" });
+		
+		bEnableUndefinedIdentifierWarnings = false;
 
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");

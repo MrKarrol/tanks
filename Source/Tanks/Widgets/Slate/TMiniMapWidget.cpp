@@ -27,9 +27,9 @@ int32 STMiniMapWidget::OnPaint(const FPaintArgs& Args, const FGeometry& Allotted
     const float AllottedWidth = AllottedGeometry.GetLocalSize().X;
     const float AllottedHeight = AllottedGeometry.GetLocalSize().Y;
 
-	const int32 ActualMapSide = AllottedHeight * FMath::Clamp(Size, 10.f, 40.f) / 100;
-	const int32 ActualBufferSide = AllottedHeight * FMath::Clamp(Buffer, 1.f, 10.f) / 100;
-	const int32 ActualThickness = AllottedHeight * FMath::Clamp(Thickness, 1.f, 4.f) / 100;
+	const int32 ActualMapSide = AllottedHeight * FMath::Clamp(Size, 0.f, 40.f) / 100;
+	const int32 ActualBufferSide = AllottedHeight * FMath::Clamp(Buffer, 0.f, 40.f) / 100;
+	const int32 ActualThickness = AllottedHeight * FMath::Clamp(Thickness, 0.f, 40.f) / 100;
 	
     constexpr ESlateDrawEffect DrawEffects = ESlateDrawEffect::None;
 
