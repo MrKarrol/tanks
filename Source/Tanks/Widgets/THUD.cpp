@@ -1,5 +1,6 @@
 ﻿#include "THUD.h"
 
+#include <Actor.h>
 #include <ThirdParty/CryptoPP/5.6.5/include/config.h>
 
 #include "DrawDebugHelpers.h"
@@ -91,16 +92,37 @@ void ATHUD::SetupMiniMap()
 	TArray<TArray<FVector2D>> bounds_to_paint;
 	for (const auto wall : walls)
 	{
-		FVector Origin;
-		FVector BoxExtent;
-		wall->GetActorBounds(false, Origin, BoxExtent, true);
-		auto box = wall->GetComponentsBoundingBox();
-		auto wall_location = wall->GetActorLocation();
-		wall_location.Z += 1000; // debug
-		FVector final_point = wall_location + Origin * BoxExtent;
-		final_point.Z += 1000; // debug
-		DrawDebugBox(GetWorld(), box.GetCenter(), box.GetExtent(), wall->GetActorRotation().Quaternion(), FColor::Red, false, 0.f, 5, 5.f);
-
+		FBox actual_size;
+		FVector actor_location = wall->GetActorLocation();
+		for (const auto component : wall->GetComponents())
+		{
+			if (const auto static_mesh = Cast<UStaticMeshComponent>(component))
+			{
+				FBox size_box;
+				static_mesh->GetLocalBounds(size_box.Min, size_box.Max);
+				const auto transform = static_mesh->GetRelativeTransform();
+				const auto mesh_location = actor_location + transform.GetLocation();
+				const auto scaled_size_box = FBox(size_box.Min * transform.GetScale3D(), size_box.Max * transform.GetScale3D());
+				
+				actual_size = FBox(mesh_location + scaled_size_box.Min,  mesh_location + scaled_size_box.Max);
+				break;
+			}
+			else if (const auto skeletal_mesh = Cast<USkeletalMeshComponent>(component))
+			{
+				auto size_box = skeletal_mesh->GetCachedLocalBounds().GetBox();
+				const auto transform = static_mesh->GetRelativeTransform();
+				const auto mesh_location = actor_location + transform.GetLocation();
+				const auto scaled_size_box = FBox(size_box.Min * transform.GetScale3D(), size_box.Max * transform.GetScale3D());
+				
+				actual_size = FBox(mesh_location + scaled_size_box.Min,  mesh_location + scaled_size_box.Max);
+				break;
+			}
+		}
+		if (actual_size.Min.IsNearlyZero() || actual_size.Max.IsNearlyZero())
+			continue;
+		DrawDebugBox(GetWorld(), actual_size.GetCenter(), actual_size.GetExtent(), wall->GetActorRotation().Quaternion(), FColor::Red, false, 0.f, 5, 5.f);
+		
+		
 		// find coordinates of box extend final points
 	}
 }
