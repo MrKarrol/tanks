@@ -12,6 +12,10 @@ void STMiniMapWidget::Construct(const FArguments& InArgs)
 	Size = InArgs._Size;
 	Thickness = InArgs._Thickness;
 	Buffer = InArgs._Buffer;
+	SizeX = InArgs._SizeX;
+	SizeY = InArgs._SizeY;
+	BoundsToPaint = InArgs._BoundsToPaint;
+	PlayerPoints = InArgs._PlayerPoints;
 	/*
 	ChildSlot
 	[
@@ -27,7 +31,7 @@ int32 STMiniMapWidget::OnPaint(const FPaintArgs& Args, const FGeometry& Allotted
     const float AllottedWidth = AllottedGeometry.GetLocalSize().X;
     const float AllottedHeight = AllottedGeometry.GetLocalSize().Y;
 
-	const int32 ActualMapSide = AllottedHeight * FMath::Clamp(Size, 0.f, 40.f) / 100;
+	// const int32 ActualMapSide = AllottedHeight * FMath::Clamp(Size, 0.f, 40.f) / 100;
 	const int32 ActualBufferSide = AllottedHeight * FMath::Clamp(Buffer, 0.f, 40.f) / 100;
 	const int32 ActualThickness = AllottedHeight * FMath::Clamp(Thickness, 0.f, 40.f) / 100;
 	
@@ -36,24 +40,46 @@ int32 STMiniMapWidget::OnPaint(const FPaintArgs& Args, const FGeometry& Allotted
 	++LayerId;
 
     FSlateBrush brush;
-	const TArray<FVector2D> Points = {
-		{AllottedWidth - ActualMapSide - ActualBufferSide, AllottedHeight - ActualMapSide - ActualBufferSide},
-		{AllottedWidth - ActualBufferSide, AllottedHeight - ActualMapSide - ActualBufferSide},
-		{AllottedWidth - ActualBufferSide, AllottedHeight - ActualBufferSide},
-		{AllottedWidth - ActualMapSide - ActualBufferSide, AllottedHeight - ActualBufferSide},
-		{AllottedWidth - ActualMapSide - ActualBufferSide, AllottedHeight - ActualMapSide - ActualBufferSide}};
-    FSlateDrawElement::MakeLines(
-        OutDrawElements,
-        LayerId,
-        AllottedGeometry.ToPaintGeometry(),
-        Points,
-        DrawEffects,
-        FLinearColor::Red * 
-            InWidgetStyle.GetColorAndOpacityTint(),
-            true,
-            ActualThickness
-        );
-
+	const FLinearColor main_color = FLinearColor::Red;
+	const FLinearColor player_color = FLinearColor::Yellow;
+	for (const auto &point_array : BoundsToPaint)
+	{
+		TArray<FVector2D>  points_to_paint;
+		for (const auto &point : point_array)
+		{
+			points_to_paint.Add({AllottedWidth - SizeX - ActualBufferSide + point.X, AllottedHeight - SizeY - ActualBufferSide + point.Y});
+		}
+		FSlateDrawElement::MakeLines(
+		OutDrawElements,
+		LayerId,
+		AllottedGeometry.ToPaintGeometry(),
+		points_to_paint,
+		DrawEffects,
+		main_color * 
+			InWidgetStyle.GetColorAndOpacityTint(),
+			true,
+			ActualThickness
+		);
+	}
+	// print player
+    {
+    	TArray<FVector2D>  points_to_paint;
+    	for (const auto &point : PlayerPoints)
+    	{
+    		points_to_paint.Add({AllottedWidth - SizeX - ActualBufferSide + point.X, AllottedHeight - SizeY - ActualBufferSide + point.Y});
+    	}
+    	FSlateDrawElement::MakeLines(
+		OutDrawElements,
+		LayerId,
+		AllottedGeometry.ToPaintGeometry(),
+		points_to_paint,
+		DrawEffects,
+		player_color * 
+			InWidgetStyle.GetColorAndOpacityTint(),
+			true,
+			ActualThickness
+		);
+    }
     
 
     return LayerId;

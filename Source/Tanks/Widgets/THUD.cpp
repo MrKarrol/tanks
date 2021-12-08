@@ -1,17 +1,15 @@
 ﻿#include "THUD.h"
 
-#include <Actor.h>
-#include <ThirdParty/CryptoPP/5.6.5/include/config.h>
-
-#include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tanks/Widgets/TWidget.h"
 #include "Tanks/Widgets/PlayerStateWidget.h"
+#include "Tanks/Widgets/TMiniMapHolder.h"
 #include "Tanks/Player/TPlayerPawn.h"
 #include "Tanks/Components/THealthComponent.h"
 #include "Tanks/Core/GameModes/TGameMode.h"
 #include "Tanks/Guns/TGun.h"
 #include "Tanks/Meta/TWall.h"
+#include "Tanks/Meta/TFloor.h"
 
 
 ATHUD::ATHUD()
@@ -83,6 +81,12 @@ void ATHUD::SetupPlayerState()
 
 void ATHUD::SetupMiniMap()
 {
+	if (!showed_side_widgets.Contains(ESideWidgetType::SWT_MiniMap))
+		return;
+	const auto mini_map_widget = Cast<UTMiniMapHolder>(showed_side_widgets[ESideWidgetType::SWT_MiniMap]);
+	if (!mini_map_widget)
+		return;
+	
 	TArray<AActor*> walls;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATWall::StaticClass(), walls);
 	if (!walls.Num())
@@ -90,11 +94,12 @@ void ATHUD::SetupMiniMap()
 
 	// int32 Xfinal, Yfinal;
 	TArray<TArray<FVector2D>> bounds_to_paint;
-	for (const auto wall : walls)
+
+	auto GetXYExtremePoints = [&bounds_to_paint](const AActor * actor) -> TArray<FVector2D>
 	{
 		FBox actual_size;
-		FVector actor_location = wall->GetActorLocation();
-		for (const auto component : wall->GetComponents())
+		const FVector actor_location = actor->GetActorLocation();
+		for (const auto component : actor->GetComponents())
 		{
 			if (const auto static_mesh = Cast<UStaticMeshComponent>(component))
 			{
@@ -109,8 +114,8 @@ void ATHUD::SetupMiniMap()
 			}
 			else if (const auto skeletal_mesh = Cast<USkeletalMeshComponent>(component))
 			{
-				auto size_box = skeletal_mesh->GetCachedLocalBounds().GetBox();
-				const auto transform = static_mesh->GetRelativeTransform();
+				const auto size_box = skeletal_mesh->GetCachedLocalBounds().GetBox();
+				const auto transform = skeletal_mesh->GetRelativeTransform();
 				const auto mesh_location = actor_location + transform.GetLocation();
 				const auto scaled_size_box = FBox(size_box.Min * transform.GetScale3D(), size_box.Max * transform.GetScale3D());
 				
@@ -119,12 +124,95 @@ void ATHUD::SetupMiniMap()
 			}
 		}
 		if (actual_size.Min.IsNearlyZero() || actual_size.Max.IsNearlyZero())
-			continue;
-		DrawDebugBox(GetWorld(), actual_size.GetCenter(), actual_size.GetExtent(), wall->GetActorRotation().Quaternion(), FColor::Red, false, 0.f, 5, 5.f);
-		
-		
-		// find coordinates of box extend final points
+			return {};
+
+		FTransform const Transform(actor->GetActorRotation().Quaternion());
+		const auto first_point = actual_size.GetCenter() + Transform.TransformPosition(FVector(actual_size.GetExtent().X, actual_size.GetExtent().Y, actual_size.GetExtent().Z));
+		const auto second_point = actual_size.GetCenter() + Transform.TransformPosition(FVector(actual_size.GetExtent().X, -actual_size.GetExtent().Y, actual_size.GetExtent().Z));
+		const auto third_point = actual_size.GetCenter() + Transform.TransformPosition(FVector(-actual_size.GetExtent().X, -actual_size.GetExtent().Y, actual_size.GetExtent().Z));
+		const auto forth_point = actual_size.GetCenter() + Transform.TransformPosition(FVector(-actual_size.GetExtent().X, actual_size.GetExtent().Y, actual_size.GetExtent().Z));
+		auto Get2D = [](const FVector &vec)
+		{
+			return FVector2D(vec.X, vec.Y);
+		};
+		TArray<FVector2D> points;
+		points.Add(Get2D(first_point));
+		points.Add(Get2D(second_point));
+		points.Add(Get2D(third_point));
+		points.Add(Get2D(forth_point));
+		points.Add(Get2D(first_point));
+
+		return points;
+	};
+	
+	for (const auto wall : walls)
+	{
+		auto points = GetXYExtremePoints(wall);
+		if (points.Num())
+			bounds_to_paint.Add(std::move(points));
 	}
+
+	if (! bounds_to_paint.Num())
+		if (! bounds_to_paint[0].Num())
+			return;
+	float lowestY = bounds_to_paint[0][0].Y;
+	float highestY = bounds_to_paint[0][0].Y;
+	float lowestX = bounds_to_paint[0][0].X;
+	float highestX = bounds_to_paint[0][0].X;
+	for (const auto &points_array : bounds_to_paint)
+		for (const auto &point : points_array)
+		{
+			if (point.X > highestX)
+				highestX = point.X;
+			if (point.X < lowestX)
+				lowestX = point.X;
+			if (point.Y > highestY)
+				highestY = point.Y;
+			if (point.Y < lowestY)
+				lowestY = point.Y;
+		}
+	const float finalX = highestX - lowestX;
+	const float finalY = highestY - lowestY;
+
+	const float sizeX = mini_map_widget->GetMiniMapSize() * finalX / FMath::Max(finalX, finalY);
+	const float sizeY = mini_map_widget->GetMiniMapSize() * finalY / FMath::Max(finalX, finalY);
+
+	auto ConvertPoint = [lowestX, lowestY, sizeX, sizeY, finalX, finalY](FVector2D &point)
+	{
+		point.X -= lowestX;
+		point.X = point.X * sizeX / finalX;
+		point.Y -= lowestY;
+		point.Y = sizeY - point.Y * sizeY / finalY;
+	};
+	
+	for (auto &point_array : bounds_to_paint)
+		for (auto &point : point_array)
+		{
+			ConvertPoint(point);
+		}
+	
+	TArray<AActor*> all_actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), all_actors);
+
+	TArray<FVector2D> player_points;
+	for (const auto actor : all_actors)
+	{
+		if (Cast<ATWall>(actor) || Cast<ATFloor>(actor))
+			continue;
+
+		auto points = GetXYExtremePoints(actor);
+		if (!points.Num())
+			continue;
+		for (auto & point : points)
+			ConvertPoint(point);
+
+		if (Cast<ATPlayerPawn>(actor))
+			player_points = std::move(points);
+		else
+			bounds_to_paint.Add(std::move(points));
+	}
+
+	mini_map_widget->SetBoundsToPaint(sizeX, sizeY, std::move(bounds_to_paint), std::move(player_points));
 }
 
 void ATHUD::ShowMainWidget(const EMainWidgetType main_widget_type, const int32 ZOrder)

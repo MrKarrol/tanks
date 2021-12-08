@@ -18,6 +18,10 @@ public:
 	SLATE_ARGUMENT( float, Size )
 	SLATE_ARGUMENT( float, Thickness )
 	SLATE_ARGUMENT( float, Buffer )
+	SLATE_ARGUMENT( float, SizeX )
+	SLATE_ARGUMENT( float, SizeY )
+	SLATE_ARGUMENT( TArray<TArray<FVector2D>>, BoundsToPaint )
+	SLATE_ARGUMENT( TArray<FVector2D>, PlayerPoints)
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
@@ -34,5 +38,9 @@ private:
 	float Size = 10.f;
 	float Thickness = 1.f;
 	float Buffer = 2.f;
+	float SizeX = 0.f;
+	float SizeY = 0.f;
+	TArray<TArray<FVector2D>> BoundsToPaint;
+	TArray<FVector2D> PlayerPoints;
 	
 };

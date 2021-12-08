@@ -21,6 +21,9 @@ public:
 	//~ Begin UVisual Interface
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 	//~ End UVisual Interface
+	float GetMiniMapSize() const;
+
+	void SetBoundsToPaint(float sizeX, float sizeY, TArray<TArray<FVector2D>> &&points_to_bound, TArray<FVector2D> && _player_points);
 
 protected:
 	//~ Begin UWidget Interface
@@ -38,5 +41,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float MiniMapBuffer;
+
+private:
+	float sizeX;
+	float sizeY;
+	TArray<TArray<FVector2D>> bounds_to_paint;
+	TArray<FVector2D> player_points;
 	
 };
