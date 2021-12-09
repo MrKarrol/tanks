@@ -1,5 +1,6 @@
 ﻿#include "THUD.h"
 
+#include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tanks/Widgets/TWidget.h"
 #include "Tanks/Widgets/PlayerStateWidget.h"
@@ -106,7 +107,8 @@ void ATHUD::SetupMiniMap()
 				FBox size_box;
 				static_mesh->GetLocalBounds(size_box.Min, size_box.Max);
 				const auto transform = static_mesh->GetRelativeTransform();
-				const auto mesh_location = actor_location + transform.GetLocation();
+				// const auto mesh_location = actor_location + transform.GetLocation();
+				const auto mesh_location = actor_location;
 				const auto scaled_size_box = FBox(size_box.Min * transform.GetScale3D(), size_box.Max * transform.GetScale3D());
 				
 				actual_size = FBox(mesh_location + scaled_size_box.Min,  mesh_location + scaled_size_box.Max);
@@ -116,7 +118,8 @@ void ATHUD::SetupMiniMap()
 			{
 				const auto size_box = skeletal_mesh->GetCachedLocalBounds().GetBox();
 				const auto transform = skeletal_mesh->GetRelativeTransform();
-				const auto mesh_location = actor_location + transform.GetLocation();
+				// const auto mesh_location = actor_location + transform.GetLocation();
+				const auto mesh_location = actor_location;
 				const auto scaled_size_box = FBox(size_box.Min * transform.GetScale3D(), size_box.Max * transform.GetScale3D());
 				
 				actual_size = FBox(mesh_location + scaled_size_box.Min,  mesh_location + scaled_size_box.Max);
@@ -184,13 +187,7 @@ void ATHUD::SetupMiniMap()
 		point.Y -= lowestY;
 		point.Y = sizeY - point.Y * sizeY / finalY;
 	};
-	
-	for (auto &point_array : bounds_to_paint)
-		for (auto &point : point_array)
-		{
-			ConvertPoint(point);
-		}
-	
+
 	TArray<AActor*> all_actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), all_actors);
 
@@ -203,8 +200,6 @@ void ATHUD::SetupMiniMap()
 		auto points = GetXYExtremePoints(actor);
 		if (!points.Num())
 			continue;
-		for (auto & point : points)
-			ConvertPoint(point);
 
 		if (Cast<ATPlayerPawn>(actor))
 			player_points = std::move(points);
@@ -212,6 +207,23 @@ void ATHUD::SetupMiniMap()
 			bounds_to_paint.Add(std::move(points));
 	}
 
+	// for (const auto &point_array : bounds_to_paint)
+	// {
+	// 	DrawDebugLine(GetWorld(), FVector(point_array[0].X, point_array[0].Y, 200) , FVector(point_array[1].X, point_array[1].Y, 200), FColor::Red, false, 0.f, 5, 7.f);
+	// 	DrawDebugLine(GetWorld(), FVector(point_array[1].X, point_array[1].Y, 200) , FVector(point_array[2].X, point_array[2].Y, 200), FColor::Red, false, 0.f, 5, 7.f);
+	// 	DrawDebugLine(GetWorld(), FVector(point_array[2].X, point_array[2].Y, 200) , FVector(point_array[3].X, point_array[3].Y, 200), FColor::Red, false, 0.f, 5, 7.f);
+	// 	DrawDebugLine(GetWorld(), FVector(point_array[3].X, point_array[3].Y, 200) , FVector(point_array[4].X, point_array[4].Y, 200), FColor::Red, false, 0.f, 5, 7.f);
+	// }
+
+	for (auto &point_array : bounds_to_paint)
+		for (auto &point : point_array)
+		{
+			ConvertPoint(point);
+		}
+
+	for (auto &point : player_points)
+		ConvertPoint(point);
+	
 	mini_map_widget->SetBoundsToPaint(sizeX, sizeY, std::move(bounds_to_paint), std::move(player_points));
 }
 

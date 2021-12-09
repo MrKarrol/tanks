@@ -12,10 +12,6 @@ void STMiniMapWidget::Construct(const FArguments& InArgs)
 	Size = InArgs._Size;
 	Thickness = InArgs._Thickness;
 	Buffer = InArgs._Buffer;
-	SizeX = InArgs._SizeX;
-	SizeY = InArgs._SizeY;
-	BoundsToPaint = InArgs._BoundsToPaint;
-	PlayerPoints = InArgs._PlayerPoints;
 	/*
 	ChildSlot
 	[
@@ -24,12 +20,28 @@ void STMiniMapWidget::Construct(const FArguments& InArgs)
 	*/
 }
 
+void STMiniMapWidget::SetBoundsToPaint(float sizeX, float sizeY, TArray<TArray<FVector2D>>&& points_to_bound,
+	TArray<FVector2D>&& _player_points)
+{
+	SizeX = sizeX;
+	SizeY = sizeY;
+	BoundsToPaint = std::move(points_to_bound);
+	PlayerPoints = std::move(_player_points);
+}
+
+float STMiniMapWidget::GetMiniMapSize() const
+{
+	return FMath::Max(ScreenWidth, ScreenHeight) * Size / 100.f;
+}
+
 int32 STMiniMapWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry,
-	const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId,
-	const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const
+                               const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId,
+                               const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const
 {
     const float AllottedWidth = AllottedGeometry.GetLocalSize().X;
+	ScreenWidth = AllottedWidth;
     const float AllottedHeight = AllottedGeometry.GetLocalSize().Y;
+	ScreenHeight = AllottedHeight;
 
 	// const int32 ActualMapSide = AllottedHeight * FMath::Clamp(Size, 0.f, 40.f) / 100;
 	const int32 ActualBufferSide = AllottedHeight * FMath::Clamp(Buffer, 0.f, 40.f) / 100;

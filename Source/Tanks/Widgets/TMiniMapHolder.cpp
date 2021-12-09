@@ -15,17 +15,12 @@ void UTMiniMapHolder::ReleaseSlateResources(bool bReleaseChildren)
 
 float UTMiniMapHolder::GetMiniMapSize() const
 {
-	return MiniMapSize;
+	return SlateMiniMap->GetMiniMapSize();
 }
 
-void UTMiniMapHolder::SetBoundsToPaint(float _sizeX, float _sizeY, TArray<TArray<FVector2D>>&& _bounds_to_paint, TArray<FVector2D> && _player_points)
+void UTMiniMapHolder::SetBoundsToPaint(float size_x, float size_y, TArray<TArray<FVector2D>>&& bounds_to_paint, TArray<FVector2D> && player_points)
 {
-	sizeX = _sizeX;
-	sizeY = _sizeY;
-	bounds_to_paint = std::move(_bounds_to_paint);
-	player_points = std::move(_player_points);
-	ReleaseSlateResources(true);
-	RebuildWidget();
+	SlateMiniMap->SetBoundsToPaint(size_x, size_y, std::move(bounds_to_paint), std::move(player_points));
 }
 
 TSharedRef<SWidget> UTMiniMapHolder::RebuildWidget()
@@ -34,10 +29,7 @@ TSharedRef<SWidget> UTMiniMapHolder::RebuildWidget()
 		.Size(MiniMapSize)
 		.Thickness(MiniMapThickness)
 		.Buffer(MiniMapBuffer)
-		.SizeX(sizeX)
-		.SizeY(sizeY)
-		.BoundsToPaint(bounds_to_paint)
-		.PlayerPoints(player_points);
+		;
 
 	return SlateMiniMap.ToSharedRef();
 }

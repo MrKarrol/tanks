@@ -18,15 +18,14 @@ public:
 	SLATE_ARGUMENT( float, Size )
 	SLATE_ARGUMENT( float, Thickness )
 	SLATE_ARGUMENT( float, Buffer )
-	SLATE_ARGUMENT( float, SizeX )
-	SLATE_ARGUMENT( float, SizeY )
-	SLATE_ARGUMENT( TArray<TArray<FVector2D>>, BoundsToPaint )
-	SLATE_ARGUMENT( TArray<FVector2D>, PlayerPoints)
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
-
+	
+	void SetBoundsToPaint(float sizeX, float sizeY, TArray<TArray<FVector2D>> &&points_to_bound, TArray<FVector2D> && _player_points);
+	float GetMiniMapSize() const;
+	
 private:
 	virtual int32 OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
 		FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle,
@@ -42,5 +41,7 @@ private:
 	float SizeY = 0.f;
 	TArray<TArray<FVector2D>> BoundsToPaint;
 	TArray<FVector2D> PlayerPoints;
+	mutable float ScreenWidth;
+	mutable float ScreenHeight;
 	
 };
