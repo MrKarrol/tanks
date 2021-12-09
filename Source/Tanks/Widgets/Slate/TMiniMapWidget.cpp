@@ -80,6 +80,7 @@ int32 STMiniMapWidget::OnPaint(const FPaintArgs& Args, const FGeometry& Allotted
     	{
     		points_to_paint.Add({AllottedWidth - SizeX - ActualBufferSide + point.X, AllottedHeight - SizeY - ActualBufferSide + point.Y});
     	}
+
     	FSlateDrawElement::MakeLines(
 		OutDrawElements,
 		LayerId,

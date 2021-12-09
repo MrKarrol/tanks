@@ -12,6 +12,8 @@ class UBoxComponent;
 class UTHealthComponent;
 class UParticleSystemComponent;
 class UAudioComponent;
+class UTWidgetComponent;
+class UTWidget;
 
 
 UENUM()
@@ -81,28 +83,31 @@ protected:
 	TMap<EGunSlot,TSubclassOf<ATGun>> PossessedGunsClasses;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UBoxComponent* BoxComponent;
+	UBoxComponent* BoxComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UStaticMeshComponent* BodyMeshComponent;
+	UStaticMeshComponent* BodyMeshComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-		bool bInfiniteAmmo = false;
+	bool bInfiniteAmmo = false;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UTHealthComponent* HealthComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UParticleSystemComponent* DamageFXComponent;
+	UParticleSystemComponent* DamageFXComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UAudioComponent* DamageAudioComponent;
+	UAudioComponent* DamageAudioComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UParticleSystemComponent* DieFXComponent;
+	UParticleSystemComponent* DieFXComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UAudioComponent* DieAudioComponent;
+	UAudioComponent* DieAudioComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UTWidgetComponent * HealthBarInGame;
 
 private:
 	TMap<EGunSlot, ATGun *> m_possessed_guns;

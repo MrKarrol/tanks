@@ -6,6 +6,7 @@
 #include "Components/AudioComponent.h"
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Tanks/Guns/TGun.h"
+#include "Tanks/Components/TWidgetComponent.h"
 
 ATPawn::ATPawn()
 {
@@ -33,6 +34,9 @@ ATPawn::ATPawn()
 	DieAudioComponent = CreateDefaultSubobject<UAudioComponent>("DieAudioComponent");
 	DieAudioComponent->SetupAttachment(BodyMeshComponent);
 	DieAudioComponent->bStopWhenOwnerDestroyed = false;
+
+	HealthBarInGame = CreateDefaultSubobject<UTWidgetComponent>("HealthBarInGame");
+	HealthBarInGame->SetupAttachment(BodyMeshComponent);
 }
 
 void ATPawn::BeginPlay()
@@ -196,7 +200,8 @@ void ATPawn::CreateGun(const EGunSlot slot, const TSubclassOf<ATGun> gun_class)
 			gun->bInfiniteAmmo = bInfiniteAmmo;
 			gun->AttachToComponent(GetGunPivotAttach(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Gun");
 			gun->SetOwner(this);
-			OnGunChangeDelegate.Execute(slot, gun); // show gun name in player state widget?
+			if (OnGunChangeDelegate.IsBound())
+				OnGunChangeDelegate.Execute(slot, gun); // show gun name in player state widget?
 		}
 	}
 }

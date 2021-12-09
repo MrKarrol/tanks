@@ -2,3 +2,12 @@
 
 
 #include "TWidget.h"
+
+void UTWidget::SetOwningActor(AActor* NewOwner)
+{
+	if (OwningActor == NewOwner)
+		return;
+
+	OwningActor = NewOwner;
+	OnOwningActorChanged.Broadcast(NewOwner);
+}
