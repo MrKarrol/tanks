@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "TWidget.generated.h"
 
+struct FTButtonStyle;
+
 /**
  * 
  */
@@ -25,6 +27,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "UI")
 	FOnOwningActorChanged OnOwningActorChanged;
+
+	virtual void SetButtonsStyle(const FTButtonStyle* InStyle);
 	
 public:
 	FOnNeedToRemove OnNeedToRemove;

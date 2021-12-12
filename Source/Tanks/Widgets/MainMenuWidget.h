@@ -10,6 +10,7 @@
 class UButton;
 class UCheckBox;
 class UVerticalBox;
+struct FTButtonStyle;
 
 /**
  * 
@@ -19,6 +20,7 @@ class TANKS_API UMainMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 
 protected:
@@ -39,6 +41,8 @@ protected:
 
 	UFUNCTION()
 	void OnReturnToMainMenuClicked();
+	
+	virtual void SetButtonStyle(const FTButtonStyle* InStyle);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
@@ -70,5 +74,5 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	TSoftObjectPtr<UWorld> LevelToStart;
-	
+
 };

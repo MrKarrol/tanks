@@ -16,10 +16,15 @@ class TANKS_API ATFactoryBattleGameMode : public ATGameMode
 public:
 	void RegisterSpawner(ATTankSpawner* Spawner);
 
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	virtual void BeginPlay() override;
 
 	void OnSpawnerDie();
+
+private:
+	void OnPlayerDie() const;
 
 public:
 	FOnEndFactoryBattleDelegate OnEndFactoryBattleDelegate;

@@ -3,6 +3,7 @@
 
 #include "Tanks/Meta/TTankSpawner.h"
 #include "Tanks/Components/THealthComponent.h"
+#include "Tanks/Player/TPlayerPawn.h"
 #include "Tanks/Widgets/THUD.h"
 
 
@@ -14,6 +15,17 @@ void ATFactoryBattleGameMode::RegisterSpawner(ATTankSpawner* Spawner)
 		Spawner->HealthComponent->OnDieDelegate.AddUObject(this, &ATFactoryBattleGameMode::OnSpawnerDie);
 	}
 
+	if (const auto player = Cast<ATPlayerPawn>(GetWorld()->GetFirstPlayerController()->GetPawn()))
+	{
+		player->GetHealthComponent()->OnDieDelegate.AddUObject(this, &ATFactoryBattleGameMode::OnPlayerDie);
+	}
+}
+
+void ATFactoryBattleGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	
 }
 
 void ATFactoryBattleGameMode::BeginPlay()
@@ -38,4 +50,13 @@ void ATFactoryBattleGameMode::OnSpawnerDie()
 		}
 	if (bIsAllDead)
 		OnEndFactoryBattleDelegate.Broadcast();
+}
+
+void ATFactoryBattleGameMode::OnPlayerDie() const
+{
+	if (auto hud = Cast<ATHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
+	{
+		hud->HideSideWidget(ESideWidgetType::SWT_MiniMap);
+		hud->ShowMainWidget(EMainWidgetType::MWT_GameOverMenu);
+	}
 }

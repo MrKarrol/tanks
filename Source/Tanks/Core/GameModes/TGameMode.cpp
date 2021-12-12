@@ -25,4 +25,6 @@ void ATGameMode::Tick(float DeltaSeconds)
 		current_enemies_count += out_actors.Num();
 	}
 	OnEnemiesNumberChangedDelegate.Broadcast(current_enemies_count);
+
+	
 }

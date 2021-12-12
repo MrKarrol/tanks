@@ -194,7 +194,7 @@ void ATHUD::SetupMiniMap()
 	TArray<FVector2D> player_points;
 	for (const auto actor : all_actors)
 	{
-		if (Cast<ATWall>(actor) || Cast<ATFloor>(actor))
+		if (Cast<ATWall>(actor) || Cast<ATFloor>(actor) || Cast<ATGun>(actor))
 			continue;
 
 		auto points = GetXYExtremePoints(actor);

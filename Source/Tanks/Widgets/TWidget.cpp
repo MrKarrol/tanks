@@ -3,6 +3,7 @@
 
 #include "TWidget.h"
 
+
 void UTWidget::SetOwningActor(AActor* NewOwner)
 {
 	if (OwningActor == NewOwner)
@@ -10,4 +11,9 @@ void UTWidget::SetOwningActor(AActor* NewOwner)
 
 	OwningActor = NewOwner;
 	OnOwningActorChanged.Broadcast(NewOwner);
+}
+
+void UTWidget::SetButtonsStyle(const FTButtonStyle* InStyle)
+{
+	
 }

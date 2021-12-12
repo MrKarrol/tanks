@@ -1,11 +1,39 @@
 ﻿#include "MainMenuWidget.h"
 
-#include "EditorDirectories.h"
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
 #include "Components/VerticalBox.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Styles/TButtonsWidgetStyle.h"
+#include "Styles/StyleSet.h"
+
+void UMainMenuWidget::NativePreConstruct()
+{
+	if (NewGameBtn)
+		NewGameBtn->WidgetStyle = 
+			FStyleSet::Get().GetWidgetStyle<FTButtonStyle>(
+				FName("BP_ButtonWidgetStyle")
+			).ButtonStyle;
+
+	if (OptionsBtn)
+		OptionsBtn->WidgetStyle = 
+			FStyleSet::Get().GetWidgetStyle<FTButtonStyle>(
+				FName("BP_ButtonWidgetStyle")
+			).ButtonStyle;
+
+	if (QuitGameBtn)
+		QuitGameBtn->WidgetStyle = 
+			FStyleSet::Get().GetWidgetStyle<FTButtonStyle>(
+				FName("BP_ButtonWidgetStyle")
+			).ButtonStyle;
+
+	if (ReturnToMainMenuBtn)
+		ReturnToMainMenuBtn->WidgetStyle = 
+			FStyleSet::Get().GetWidgetStyle<FTButtonStyle>(
+				FName("BP_ButtonWidgetStyle")
+			).ButtonStyle;
+}
 
 void UMainMenuWidget::NativeConstruct()
 {
@@ -64,4 +92,12 @@ void UMainMenuWidget::OnReturnToMainMenuClicked()
 {
 	Options->SetVisibility(ESlateVisibility::Hidden);
 	MainMenu->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UMainMenuWidget::SetButtonStyle(const FTButtonStyle* InStyle)
+{
+	NewGameBtn->SetStyle(InStyle->ButtonStyle);
+	OptionsBtn->SetStyle(InStyle->ButtonStyle);	
+	QuitGameBtn->SetStyle(InStyle->ButtonStyle);
+	ReturnToMainMenuBtn->SetStyle(InStyle->ButtonStyle);
 }
