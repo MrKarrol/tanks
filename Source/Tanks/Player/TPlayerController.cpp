@@ -2,16 +2,28 @@
 
 
 #include "TPlayerController.h"
-#include "TPlayerPawn.h"
+
 
 ATPlayerController::ATPlayerController()
 {
+	bEnableClickEvents = true;
 }
 
 void ATPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	// if (InputComponent)
+	// {
+	// 	InputComponent->BindKey(EKeys::LeftMouseButton, IE_Released,
+	// 		this, &ATPlayerController::OnLeftMouseButtonUp);
+	// }
+}
+
+void ATPlayerController::OnLeftMouseButtonUp()
+{
+	if (OnMouseButtonUp.IsBound())
+		OnMouseButtonUp.Broadcast();
 }
 
 void ATPlayerController::BeginPlay()
@@ -19,12 +31,4 @@ void ATPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	SetInputMode(FInputModeGameAndUI());
-}
-
-void ATPlayerController::MoveForward(float AxisValue)
-{
-}
-
-void ATPlayerController::MoveRight(float AxisValue)
-{
 }

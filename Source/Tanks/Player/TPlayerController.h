@@ -6,8 +6,6 @@
 #include "GameFramework/PlayerController.h"
 #include "TPlayerController.generated.h"
 
-class ATPlayerPawn;
-
 /**
  * 
  */
@@ -16,17 +14,18 @@ class TANKS_API ATPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-protected:
-	UPROPERTY()
-		ATPlayerPawn* PlayerPawn;
-
 public:
 	ATPlayerController();
-	virtual void SetupInputComponent() override;
 
 protected:
 	virtual void BeginPlay() override;
-	void MoveForward(float AxisValue);
-	void MoveRight(float AxisValue);
+
+	virtual void SetupInputComponent() override;
+
+private:
+	void OnLeftMouseButtonUp();
+
+public:
+	FSimpleMulticastDelegate OnMouseButtonUp;
 	
 };

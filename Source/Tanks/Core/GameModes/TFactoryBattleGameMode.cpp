@@ -24,15 +24,13 @@ void ATFactoryBattleGameMode::RegisterSpawner(ATTankSpawner* Spawner)
 void ATFactoryBattleGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	
 }
 
 void ATFactoryBattleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (auto hud = Cast<ATHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
+	if (const auto hud = Cast<ATHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
 	{
 		hud->ShowSideWidget(ESideWidgetType::SWT_PlayerState, 1);
 		hud->ShowSideWidget(ESideWidgetType::SWT_MiniMap, 1);
@@ -42,7 +40,7 @@ void ATFactoryBattleGameMode::BeginPlay()
 void ATFactoryBattleGameMode::OnSpawnerDie()
 {
 	bool bIsAllDead = true;
-	for (auto spawner : Spawners)
+	for (const auto spawner : Spawners)
 		if (spawner && !spawner->IsDead())
 		{
 			bIsAllDead = false;
@@ -54,7 +52,7 @@ void ATFactoryBattleGameMode::OnSpawnerDie()
 
 void ATFactoryBattleGameMode::OnPlayerDie() const
 {
-	if (auto hud = Cast<ATHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
+	if (const auto hud = Cast<ATHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
 	{
 		hud->HideSideWidget(ESideWidgetType::SWT_MiniMap);
 		hud->ShowMainWidget(EMainWidgetType::MWT_GameOverMenu);
