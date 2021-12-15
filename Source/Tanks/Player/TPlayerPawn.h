@@ -10,6 +10,8 @@ class UCameraComponent;
 class USpringArmComponent;
 class UArrowComponent;
 class ATGun;
+class UTInventoryComponent;
+class UTInventoryManagerComponent;
 
 
 UCLASS()
@@ -53,16 +55,22 @@ protected:
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		USpringArmComponent* SpringArmComponent;
+	USpringArmComponent* SpringArmComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite,	Category = "Components")
-		UCameraComponent* CameraComponent;
+	UCameraComponent* CameraComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		USpringArmComponent* SpringArmThirdViewComponent;
+	USpringArmComponent* SpringArmThirdViewComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UCameraComponent* CameraThirdViewComponent;
+	UCameraComponent* CameraThirdViewComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UTInventoryComponent * InventoryComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UTInventoryManagerComponent * InventoryManagerComponent;
 
 private:
 	void DefineCameraView(ATGun*);

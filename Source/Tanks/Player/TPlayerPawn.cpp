@@ -4,8 +4,8 @@
 #include "Tanks/Components/THealthComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "DrawDebugHelpers.h"
-#include "Tanks/Tanks.h"
+#include "Tanks/Components/TInventoryComponent.h"
+#include "Tanks/Components/TInventoryManagerComponent.h"
 #include "Tanks/Guns/TGun.h"
 
 
@@ -25,17 +25,23 @@ ATPlayerPawn::ATPlayerPawn()
 	CameraThirdViewComponent = CreateDefaultSubobject<UCameraComponent>("CameraThirdViewComponent");
 	CameraThirdViewComponent->SetupAttachment(SpringArmThirdViewComponent);
 	CameraThirdViewComponent->Deactivate();
+
+	InventoryComponent = CreateDefaultSubobject<UTInventoryComponent>("InventoryComponent");
+
+	InventoryManagerComponent = CreateDefaultSubobject<UTInventoryManagerComponent>("InventoryManagerComponent");
 }
 
 void ATPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (auto gun = GetCurrentGun())
+	if (const auto gun = GetCurrentGun())
 	{
 		gun->OnShotDelegate.AddUObject(this, &ATPlayerPawn::OnShot);
 		gun->OnGetScoreDelegate.BindUObject(this, &ATPlayerPawn::TakeScore);
 	}
+
+	InventoryManagerComponent->Init(InventoryComponent);
 }
 
 void ATPlayerPawn::SwapGuns()

@@ -12,12 +12,6 @@ ATPlayerController::ATPlayerController()
 void ATPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-
-	// if (InputComponent)
-	// {
-	// 	InputComponent->BindKey(EKeys::LeftMouseButton, IE_Released,
-	// 		this, &ATPlayerController::OnLeftMouseButtonUp);
-	// }
 }
 
 void ATPlayerController::OnLeftMouseButtonUp()
