@@ -4,7 +4,7 @@
 #include "TInventoryManagerComponent.h"
 
 #include "TInventoryComponent.h"
-#include "Components/SplineComponent.h"
+#include "Tanks/Widgets/TInventoryWidget.h"
 
 
 UTInventoryManagerComponent::UTInventoryManagerComponent()
@@ -18,16 +18,18 @@ void UTInventoryManagerComponent::Init(UTInventoryComponent* InInventoryComponen
 
 	if (LocalInventoryComponent && InventoryItemsData)
 	{
+		ensure(InventoryWidgetClass);
+		InventoryWidget = CreateWidget<UTInventoryWidget>(GetWorld(), InventoryWidgetClass);
+		InventoryWidget->AddToViewport();
+
+		InventoryWidget->Init(FMath::Max(LocalInventoryComponent->GetItemsNum(), MinInventorySize));
+
 		for (const auto & Item : LocalInventoryComponent->GetItems())
 		{
 			const FTInventoryItemInfo * ItemData = GetItemData(Item.Value.ID);
 			if (ItemData)
 			{
-				// TODO manage item
-				const FString ItemDataStr = ItemData->Name.ToString() + ": " +
-					FString::FromInt(Item.Value.Amount);
-				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Emerald,
-					ItemDataStr);
+				InventoryWidget->AddItem(Item.Value, *ItemData, Item.Key);
 			}
 		}
 	}

@@ -8,6 +8,7 @@
 #include "TInventoryManagerComponent.generated.h"
 
 class UTInventoryComponent;
+class UTInventoryWidget;
 /**
  * 
  */
@@ -28,5 +29,14 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UDataTable * InventoryItemsData;
+
+	UPROPERTY()
+	UTInventoryWidget * InventoryWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UTInventoryWidget> InventoryWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	int32 MinInventorySize = 10;
 
 };
