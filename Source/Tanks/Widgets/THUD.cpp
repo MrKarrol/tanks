@@ -227,11 +227,11 @@ void ATHUD::SetupMiniMap()
 	mini_map_widget->SetBoundsToPaint(sizeX, sizeY, std::move(bounds_to_paint), std::move(player_points));
 }
 
-void ATHUD::ShowMainWidget(const EMainWidgetType main_widget_type, const int32 ZOrder)
+UUserWidget * ATHUD::ShowMainWidget(const EMainWidgetType main_widget_type, const int32 ZOrder)
 {
 	HideMainWidget();
 	if (! MainWidgetClasses.Contains(main_widget_type))
-		return;
+		return nullptr;
 	if (const auto new_main_class = MainWidgetClasses[main_widget_type])
 	{
 		showed_main_widget = CreateWidget<UUserWidget>(GetWorld(), new_main_class);
@@ -239,16 +239,39 @@ void ATHUD::ShowMainWidget(const EMainWidgetType main_widget_type, const int32 Z
 		{
 			showed_main_widget->AddToViewport(ZOrder);
 			if (const auto twidget = Cast<UTWidget>(showed_main_widget))
-				twidget->OnNeedToRemove.BindUObject(this, &ATHUD::HideMainWidget);
+			{
+				twidget->OnNeedToRemove.AddUObject(this, &ATHUD::HideMainWidget);
+
+				if (main_widget_type == EMainWidgetType::MWT_PauseMenu)
+				{
+					TArray<ESideWidgetType> showed_widgets_types;
+					showed_side_widgets.GetKeys(showed_widgets_types);
+					for (const auto type : showed_widgets_types)
+						HideSideWidget(type);
+					twidget->OnNeedToRemove.AddLambda([showed_widgets_types, this]()
+					{
+						for (const auto type : showed_widgets_types)
+						{
+							if (type != ESideWidgetType::SWT_MiniMap)
+								ShowSideWidget(type, 1);
+							else
+								ShowSideWidget(type);
+						}
+					});
+				}
+			}
+				
+			return showed_main_widget;
 		}
 	}
+	return nullptr;
 }
 
-void ATHUD::ShowSideWidget(const ESideWidgetType side_widget_type, const int32 ZOrder)
+UUserWidget * ATHUD::ShowSideWidget(const ESideWidgetType side_widget_type, const int32 ZOrder)
 {
 	HideSideWidget(side_widget_type);
 	if (! SideWidgetClasses.Contains(side_widget_type))
-		return;
+		return nullptr;
 	
 	if (const auto new_side_class = SideWidgetClasses[side_widget_type])
 	{
@@ -258,7 +281,11 @@ void ATHUD::ShowSideWidget(const ESideWidgetType side_widget_type, const int32 Z
 		
 		if (side_widget_type == ESideWidgetType::SWT_PlayerState)
 			SetupPlayerState();
+
+		if (const auto widget = *showed_side_widgets.Find(side_widget_type))
+			return widget;
 	}
+	return nullptr;
 }
 
 void ATHUD::HideMainWidget()
@@ -284,4 +311,29 @@ void ATHUD::HideSideWidget(const ESideWidgetType side_widget_type)
 		}
 		showed_side_widgets.Remove(side_widget_type);
 	}
+}
+
+bool ATHUD::IsMainWidgetShown(const EMainWidgetType type) const
+{
+	return type == showed_main_widget_type;
+}
+
+bool ATHUD::IsSideWidgetShown(const ESideWidgetType type) const
+{
+	return showed_side_widgets.Contains(type);
+}
+
+TArray<ESideWidgetType> ATHUD::ShowedSideWidgetsTypes() const
+{
+	TArray<ESideWidgetType> types;
+	showed_side_widgets.GetKeys(types);
+	return types;
+}
+
+void ATHUD::HideAllSideWidgets()
+{
+	TArray<ESideWidgetType> keys;
+	showed_side_widgets.GetKeys(keys);
+	for (const auto type : keys)
+		HideSideWidget(type);
 }

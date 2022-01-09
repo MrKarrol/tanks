@@ -33,7 +33,6 @@ void ATFactoryBattleGameMode::BeginPlay()
 	if (const auto hud = Cast<ATHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
 	{
 		hud->ShowSideWidget(ESideWidgetType::SWT_PlayerState, 1);
-		hud->ShowSideWidget(ESideWidgetType::SWT_MiniMap, 0);
 	}
 }
 
@@ -54,7 +53,7 @@ void ATFactoryBattleGameMode::OnPlayerDie() const
 {
 	if (const auto hud = Cast<ATHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
 	{
-		hud->HideSideWidget(ESideWidgetType::SWT_MiniMap);
+		hud->HideAllSideWidgets();
 		hud->ShowMainWidget(EMainWidgetType::MWT_GameOverMenu);
 	}
 }

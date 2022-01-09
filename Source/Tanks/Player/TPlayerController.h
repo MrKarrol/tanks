@@ -25,6 +25,11 @@ protected:
 private:
 	void OnLeftMouseButtonUp();
 
+	void ShowMinimap();
+	void ShowTurretHelpers();
+	void ShowInventory();
+	void ShowPauseMenu();
+
 public:
 	FSimpleMulticastDelegate OnMouseButtonUp;
 	

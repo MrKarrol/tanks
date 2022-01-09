@@ -24,9 +24,17 @@ void UPauseMenuWidget::NativeConstruct()
 	UGameplayStatics::SetGamePaused(this, true);
 }
 
+void UPauseMenuWidget::RemoveFromParent()
+{
+	Super::RemoveFromParent();
+
+	if (UGameplayStatics::IsGamePaused(this))
+		UGameplayStatics::SetGamePaused(this, false);
+}
+
 void UPauseMenuWidget::OnReturnToGameClicked()
 {
-	OnNeedToRemove.Execute();
+	OnNeedToRemove.Broadcast();
 	UGameplayStatics::SetGamePaused(this, false);
 }
 

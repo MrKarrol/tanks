@@ -21,6 +21,8 @@ enum class ESideWidgetType : uint8
 	SWT_NoWidget = 0,
 	SWT_PlayerState,
 	SWT_MiniMap,
+	SWT_TurretHelpers,
+	SWT_Inventory
 };
 
 class UUserWidget;
@@ -41,16 +43,28 @@ public:
 	void ShowPlayerState();
 
 	UFUNCTION(BlueprintCallable, Category = "UMG Game")
-	void ShowMainWidget(const EMainWidgetType main_widget_type, const int32 ZOrder = 0);
+	UUserWidget * ShowMainWidget(const EMainWidgetType main_widget_type, const int32 ZOrder = 0);
 
 	UFUNCTION(BlueprintCallable, Category = "UMG Game")
-	void ShowSideWidget(const ESideWidgetType side_widget_type, const int32 ZOrder = 0);
+	UUserWidget * ShowSideWidget(const ESideWidgetType side_widget_type, const int32 ZOrder = 0);
 
 	UFUNCTION(BlueprintCallable, Category = "UMG Game")
 	void HideMainWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "UMG Game")
 	void HideSideWidget(const ESideWidgetType side_widget_type);
+
+	UFUNCTION(BlueprintCallable, Category = "UMG Game")
+	bool IsMainWidgetShown(const EMainWidgetType type) const;
+
+	UFUNCTION(BlueprintCallable, Category = "UMG Game")
+	bool IsSideWidgetShown(const ESideWidgetType type) const;
+
+	UFUNCTION(BlueprintCallable, Category = "UMG Game")
+	TArray<ESideWidgetType> ShowedSideWidgetsTypes() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "UMG Game")
+	void HideAllSideWidgets();
 
 	virtual void Tick(float DeltaTime) override;
 

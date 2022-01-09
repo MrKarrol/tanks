@@ -13,6 +13,7 @@ class TANKS_API UPauseMenuWidget : public UTWidget
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
+	virtual void RemoveFromParent() override;
 
 protected:
 	UFUNCTION()
