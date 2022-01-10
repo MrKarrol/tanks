@@ -3,6 +3,7 @@
 
 #include "TPlayerController.h"
 
+#include "TPlayerPawn.h"
 #include "Tanks/Widgets/THUD.h"
 
 
@@ -19,10 +20,25 @@ void ATPlayerController::SetupInputComponent()
 	InputComponent->BindAction("ShowTurretHelpers", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowTurretHelpers);
 	InputComponent->BindAction("ShowInventory", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowInventory);
 	InputComponent->BindAction("Pause", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowPauseMenu);
+
+	InputComponent->BindAxis("MoveForward", this, &ATPlayerController::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &ATPlayerController::MoveRight);
+
+	InputComponent->BindAxis("MoveTurretUp", this, &ATPlayerController::MoveTurretUp);
+	InputComponent->BindAxis("MoveTurretRight", this, &ATPlayerController::MoveTurretRight);
+
+	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATPlayerController::StartFire);
+	// possible bug here. if key for Fire action will change, trigger for spawning turret helper also will change
+	// need to find way to broadcast when left mouse button is released
+	InputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ATPlayerController::OnLeftMouseButtonUp);
+	InputComponent->BindAction("AlternateFire", EInputEvent::IE_Pressed, this, &ATPlayerController::AlternateFire);
+	InputComponent->BindAction("SwapGuns", EInputEvent::IE_Pressed, this, &ATPlayerController::SwapGuns);
 }
 
 void ATPlayerController::OnLeftMouseButtonUp()
 {
+	StopFire();
+	
 	if (OnMouseButtonUp.IsBound())
 		OnMouseButtonUp.Broadcast();
 }
@@ -77,6 +93,54 @@ void ATPlayerController::ShowPauseMenu()
 			hud->ShowMainWidget(pause_menu_type);
 		}
 	}
+}
+
+void ATPlayerController::StartFire()
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->StartFire();
+}
+
+void ATPlayerController::StopFire()
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->StopFire();
+}
+
+void ATPlayerController::AlternateFire()
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->AlternateFire();
+}
+
+void ATPlayerController::SwapGuns()
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->SwapGuns();
+}
+
+void ATPlayerController::MoveForward(float Axis)
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->MoveForward(Axis);
+}
+
+void ATPlayerController::MoveRight(float Axis)
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->MoveRight(Axis);
+}
+
+void ATPlayerController::MoveTurretUp(float Axis)
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->MoveTurretUp(Axis);
+}
+
+void ATPlayerController::MoveTurretRight(float Axis)
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->MoveTurretRight(Axis);
 }
 
 void ATPlayerController::BeginPlay()

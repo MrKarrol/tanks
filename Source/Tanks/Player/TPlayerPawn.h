@@ -23,7 +23,6 @@ class TANKS_API ATPlayerPawn : public ATTankPawn, public IIScoreTaker, public II
 public:
 	ATPlayerPawn();
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	virtual void SetGun(TSubclassOf<ATGun> GunClass) override;
 
@@ -42,9 +41,11 @@ public:
 	virtual void Heal(float Health) override;
 	//= End IHealable interface
 
+	virtual void SwapGuns() override;
+
 protected:
 	virtual void BeginPlay() override;
-	virtual void SwapGuns() override;
+	
 	void CalculateTopDownTurretRotation();
 	void CalculateThirdViewTurretRotation(float DeltaTime);
 	void OnShot(ATGun*) const;

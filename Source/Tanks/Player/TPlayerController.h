@@ -30,6 +30,16 @@ private:
 	void ShowInventory();
 	void ShowPauseMenu();
 
+	void StartFire();
+	void StopFire();
+	void AlternateFire();
+	void SwapGuns();
+
+	void MoveForward(float Axis);
+	void MoveRight(float Axis);
+	void MoveTurretUp(float Axis);
+	void MoveTurretRight(float Axis);
+	
 public:
 	FSimpleMulticastDelegate OnMouseButtonUp;
 	

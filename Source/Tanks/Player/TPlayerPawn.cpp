@@ -121,22 +121,6 @@ void ATPlayerPawn::DefineCameraView(ATGun* gun)
 	}
 }
 
-void ATPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &ATPlayerPawn::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ATPlayerPawn::MoveRight);
-
-	PlayerInputComponent->BindAxis("MoveTurretUp", this, &ATPlayerPawn::MoveTurretUp);
-	PlayerInputComponent->BindAxis("MoveTurretRight", this, &ATPlayerPawn::MoveTurretRight);
-
-	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::StartFire);
-	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ATPlayerPawn::StopFire);
-	PlayerInputComponent->BindAction("AlternateFire", EInputEvent::IE_Pressed, this, &ATPlayerPawn::AlternateFire);
-	PlayerInputComponent->BindAction("SwapGuns", EInputEvent::IE_Pressed, this, &ATPlayerPawn::SwapGuns);
-}
-
 void ATPlayerPawn::SetGun(TSubclassOf<ATGun> GunClass)
 {
 	Super::SetGun(GunClass);
