@@ -4,6 +4,7 @@
 #include "TEnemyTurret.generated.h"
 
 class UArrowComponent;
+class ATGun;
 
 UCLASS()
 class TANKS_API ATEnemyTurret : public ATPawn
@@ -12,6 +13,7 @@ class TANKS_API ATEnemyTurret : public ATPawn
 public:
 	ATEnemyTurret();
 	void Tick(float DeltaTime) override;
+	void SetInitialGun(TSubclassOf<ATGun> InitialGun);
 
 protected:
 	AActor* GetTarget() const;

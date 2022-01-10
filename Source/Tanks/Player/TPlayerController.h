@@ -17,12 +17,11 @@ class TANKS_API ATPlayerController : public APlayerController
 public:
 	ATPlayerController();
 
-protected:
+private:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
 
-private:
 	void OnLeftMouseButtonUp();
 
 	void ShowMinimap();
@@ -30,10 +29,10 @@ private:
 	void ShowInventory();
 	void ShowPauseMenu();
 
-	void StartFire();
-	void StopFire();
-	void AlternateFire();
-	void SwapGuns();
+	void TankStartFire();
+	void TankStopFire();
+	void TankAlternateFire();
+	void TankSwapGuns();
 
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);

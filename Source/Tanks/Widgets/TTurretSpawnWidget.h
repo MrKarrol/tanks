@@ -7,6 +7,7 @@
 #include "TTurretSpawnWidget.generated.h"
 
 class URichTextBlock;
+class ATGun;
 /**
  * 
  */
@@ -27,6 +28,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> DraggedActorClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ATGun> DraggedActorGunClass;
 
 	UPROPERTY(EditAnywhere)
 	FString DraggedActorName;

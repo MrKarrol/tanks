@@ -27,17 +27,17 @@ void ATPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("MoveTurretUp", this, &ATPlayerController::MoveTurretUp);
 	InputComponent->BindAxis("MoveTurretRight", this, &ATPlayerController::MoveTurretRight);
 
-	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATPlayerController::StartFire);
+	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATPlayerController::TankStartFire);
 	// possible bug here. if key for Fire action will change, trigger for spawning turret helper also will change
 	// need to find way to broadcast when left mouse button is released
 	InputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ATPlayerController::OnLeftMouseButtonUp);
-	InputComponent->BindAction("AlternateFire", EInputEvent::IE_Pressed, this, &ATPlayerController::AlternateFire);
-	InputComponent->BindAction("SwapGuns", EInputEvent::IE_Pressed, this, &ATPlayerController::SwapGuns);
+	InputComponent->BindAction("AlternateFire", EInputEvent::IE_Pressed, this, &ATPlayerController::TankAlternateFire);
+	InputComponent->BindAction("SwapGuns", EInputEvent::IE_Pressed, this, &ATPlayerController::TankSwapGuns);
 }
 
 void ATPlayerController::OnLeftMouseButtonUp()
 {
-	StopFire();
+	TankStopFire();
 	
 	if (OnMouseButtonUp.IsBound())
 		OnMouseButtonUp.Broadcast();
@@ -95,25 +95,25 @@ void ATPlayerController::ShowPauseMenu()
 	}
 }
 
-void ATPlayerController::StartFire()
+void ATPlayerController::TankStartFire()
 {
 	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
 		pawn->StartFire();
 }
 
-void ATPlayerController::StopFire()
+void ATPlayerController::TankStopFire()
 {
 	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
 		pawn->StopFire();
 }
 
-void ATPlayerController::AlternateFire()
+void ATPlayerController::TankAlternateFire()
 {
 	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
 		pawn->AlternateFire();
 }
 
-void ATPlayerController::SwapGuns()
+void ATPlayerController::TankSwapGuns()
 {
 	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
 		pawn->SwapGuns();

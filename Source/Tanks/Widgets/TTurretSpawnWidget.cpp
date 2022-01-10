@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Tanks/Player/TPlayerController.h"
 #include "Components/RichTextBlock.h"
+#include "Tanks/Enemies/TEnemyTurret.h"
 
 void UTTurretSpawnWidget::NativeConstruct()
 {
@@ -48,7 +49,12 @@ FReply UTTurretSpawnWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 {
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		DraggedActor = GetWorld()->SpawnActor<AActor>(DraggedActorClass);
+		// DraggedActor = GetWorld()->SpawnActor<AActor>(DraggedActorClass);
+		const FTransform empty_transform;
+		DraggedActor = GetWorld()->SpawnActorDeferred<AActor>(DraggedActorClass, empty_transform);
+		if (const auto turret = Cast<ATEnemyTurret>(DraggedActor))
+			turret->SetInitialGun(DraggedActorGunClass);
+		DraggedActor->FinishSpawning(empty_transform);
 	}
 	return FReply::Handled();
 }

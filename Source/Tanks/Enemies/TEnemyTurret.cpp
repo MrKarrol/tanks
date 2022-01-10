@@ -25,6 +25,11 @@ void ATEnemyTurret::Tick(float DeltaTime)
 	ProcessTargeting(DeltaTime);
 }
 
+void ATEnemyTurret::SetInitialGun(TSubclassOf<ATGun> InitialGun)
+{
+	PossessedGunsClasses.Add(EGunSlot::GS_First, InitialGun);
+}
+
 AActor* ATEnemyTurret::GetTarget() const
 {
 	return UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
