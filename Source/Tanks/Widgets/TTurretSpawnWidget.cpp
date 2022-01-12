@@ -7,6 +7,8 @@
 #include "Tanks/Player/TPlayerController.h"
 #include "Components/RichTextBlock.h"
 #include "Tanks/Enemies/TEnemyTurret.h"
+#include "Tanks/Player/TPlayerPawn.h"
+
 
 void UTTurretSpawnWidget::NativeConstruct()
 {
@@ -47,14 +49,16 @@ void UTTurretSpawnWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 
 FReply UTTurretSpawnWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	const auto player_pawn = Cast<ATPlayerPawn>(PlayerController->GetPawn());
+	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton) && player_pawn && player_pawn->CanSpawnTurretHelper())
 	{
-		// DraggedActor = GetWorld()->SpawnActor<AActor>(DraggedActorClass);
 		const FTransform empty_transform;
 		DraggedActor = GetWorld()->SpawnActorDeferred<AActor>(DraggedActorClass, empty_transform);
 		if (const auto turret = Cast<ATEnemyTurret>(DraggedActor))
 			turret->SetInitialGun(DraggedActorGunClass);
 		DraggedActor->FinishSpawning(empty_transform);
+		if (const auto turret = Cast<ATEnemyTurret>(DraggedActor))
+			player_pawn->AddTurretHelper(turret);
 	}
 	return FReply::Handled();
 }

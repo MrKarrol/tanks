@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Tanks/Core/TTankPawn.h"
+#include "Tanks/Enemies/TEnemyTurret.h"
 #include "Tanks/Interfaces/IScoreTaker.h"
 #include "Tanks/Interfaces/IHealable.h"
 #include "TPlayerPawn.generated.h"
@@ -43,6 +44,10 @@ public:
 
 	virtual void SwapGuns() override;
 
+	void AddTurretHelper(ATEnemyTurret *);
+	bool CanSpawnTurretHelper() const;
+	size_t TurretHelpersNumber() const;
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -52,7 +57,7 @@ protected:
 	virtual void OnDie() override;
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void OnPawnDied();
+	void OnPawnDied();
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
@@ -73,6 +78,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UTInventoryManagerComponent * InventoryManagerComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Helpers")
+	uint8 MaxTurretHelpersCount = 3;
+	
 private:
 	void DefineCameraView(ATGun*);
 
@@ -86,5 +94,7 @@ private:
 
 	float mCachedTurretUpDelta;
 	float mCachedTurretRotationDelta;
+
+	TArray<ATEnemyTurret *> mTurretHelpers;
 
 };

@@ -52,6 +52,24 @@ void ATPlayerPawn::SwapGuns()
 		DefineCameraView(gun);
 }
 
+void ATPlayerPawn::AddTurretHelper(ATEnemyTurret* helper)
+{
+	if (mTurretHelpers.Num() >= MaxTurretHelpersCount)
+		return;
+
+	mTurretHelpers.Emplace(helper);
+}
+
+bool ATPlayerPawn::CanSpawnTurretHelper() const
+{
+	return mTurretHelpers.Num() < MaxTurretHelpersCount;
+}
+
+size_t ATPlayerPawn::TurretHelpersNumber() const
+{
+	return mTurretHelpers.Num();
+}
+
 void ATPlayerPawn::CalculateTopDownTurretRotation()
 {
 	if (const auto controller = Cast<APlayerController>(GetController()))
