@@ -14,6 +14,9 @@ public:
 	ATEnemyTurret();
 	void Tick(float DeltaTime) override;
 	void SetInitialGun(TSubclassOf<ATGun> InitialGun);
+	
+	void Enable(bool enable);
+	bool IsEnable() const;
 
 protected:
 	AActor* GetTarget() const;
@@ -30,5 +33,8 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire")
 		TEnumAsByte<ETraceTypeQuery> TraceChannel;
+
+private:
+	bool bIsEnable = true;
 
 };

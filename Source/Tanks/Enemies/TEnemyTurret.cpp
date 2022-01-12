@@ -3,7 +3,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
-#include "Tanks/Components/THealthComponent.h"
 #include "Tanks/Guns/TGun.h"
 
 
@@ -22,12 +21,23 @@ void ATEnemyTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ProcessTargeting(DeltaTime);
+	if (IsEnable())
+		ProcessTargeting(DeltaTime);
 }
 
 void ATEnemyTurret::SetInitialGun(TSubclassOf<ATGun> InitialGun)
 {
 	PossessedGunsClasses.Add(EGunSlot::GS_First, InitialGun);
+}
+
+void ATEnemyTurret::Enable(bool enable)
+{
+	bIsEnable = enable;
+}
+
+bool ATEnemyTurret::IsEnable() const
+{
+	return bIsEnable;
 }
 
 AActor* ATEnemyTurret::GetTarget() const
@@ -37,7 +47,7 @@ AActor* ATEnemyTurret::GetTarget() const
 
 bool ATEnemyTurret::TargetIsVisible() const
 {
-	auto gun = GetCurrentGun();
+	const auto gun = GetCurrentGun();
 	if (gun && GetTarget())
 	{
 		const FVector start_trace = gun->GetActorLocation();

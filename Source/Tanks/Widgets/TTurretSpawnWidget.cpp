@@ -55,7 +55,11 @@ FReply UTTurretSpawnWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 		const FTransform empty_transform;
 		DraggedActor = GetWorld()->SpawnActorDeferred<AActor>(DraggedActorClass, empty_transform);
 		if (const auto turret = Cast<ATEnemyTurret>(DraggedActor))
+		{
+			turret->Enable(false);
 			turret->SetInitialGun(DraggedActorGunClass);
+		}
+			
 		DraggedActor->FinishSpawning(empty_transform);
 		if (const auto turret = Cast<ATEnemyTurret>(DraggedActor))
 			player_pawn->AddTurretHelper(turret);
@@ -66,5 +70,9 @@ FReply UTTurretSpawnWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 void UTTurretSpawnWidget::OnMouseButtonUp()
 {
 	if (DraggedActor)
+	{
+		if (const auto turret = Cast<ATEnemyTurret>(DraggedActor))
+			turret->Enable(true);
 		DraggedActor = nullptr;
+	}
 }
