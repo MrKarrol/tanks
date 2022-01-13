@@ -3,6 +3,22 @@
 #include "TInventoryComponent.h"
 
 
+void UTInventoryComponent::Init()
+{
+	if (DefaultSetup)
+	{
+		Items.Reset();
+
+		TArray<FTInventorySlotInfo *> data;
+		DefaultSetup->GetAllRows<FTInventorySlotInfo>(nullptr, data);
+
+		int32 index = 1;
+		for (const auto row : data)
+			if (row)
+				Items.Emplace(index++, *row);
+	}
+}
+
 const FTInventorySlotInfo* UTInventoryComponent::GetItem(int32 SlotIndex) const
 {
 	return Items.Find(SlotIndex);

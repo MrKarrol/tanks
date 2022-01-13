@@ -15,6 +15,8 @@ class TANKS_API UTInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 public:
+	void Init();
+	
 	const FTInventorySlotInfo * GetItem(int32 SlotIndex) const;
 	void SetItem(int32 SlotIndex, const FTInventorySlotInfo & Item );
 	void ClearItem(int32 SlotIndex);
@@ -24,5 +26,8 @@ public:
 protected:
 	UPROPERTY(EditAnywhere)
 	TMap<int32, FTInventorySlotInfo> Items;
+
+	UPROPERTY(EditAnywhere)
+	UDataTable * DefaultSetup;
 	
 };

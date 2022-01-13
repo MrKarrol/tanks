@@ -16,9 +16,9 @@ void UTInventoryManagerComponent::Init(UTInventoryComponent* InInventoryComponen
 {
 	LocalInventoryComponent = InInventoryComponent;
 
-	if (LocalInventoryComponent && InventoryItemsData)
+	if (LocalInventoryComponent && InventoryItemsData && InventoryWidgetClass)
 	{
-		ensure(InventoryWidgetClass);
+		LocalInventoryComponent->Init();
 		InventoryWidget = CreateWidget<UTInventoryWidget>(GetWorld(), InventoryWidgetClass);
 		InventoryWidget->AddToViewport();
 

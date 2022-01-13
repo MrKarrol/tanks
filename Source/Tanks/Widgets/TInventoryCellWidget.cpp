@@ -20,7 +20,6 @@ bool UTInventoryCellWidget::AddItem(const FTInventorySlotInfo& Item, const FTInv
 	if (ItemImage)
 	{
 		ItemImage->SetBrushFromTexture(ItemInfo.Icon.Get());
-		ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
 	}
 
 	if (CountText)
