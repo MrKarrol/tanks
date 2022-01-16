@@ -77,8 +77,17 @@ UTInventoryCellWidget* UTInventoryWidget::CreateCellWidget()
 	if (CellWidgetClass)
 	{
 		const auto cell_widget = CreateWidget<UTInventoryCellWidget>(this, CellWidgetClass);
+		cell_widget->OnItemDrop.AddUObject(this, &UTInventoryWidget::OnItemDropped);
 		CellWidgets.Add(cell_widget);
 		return cell_widget;
 	}
 	return nullptr;
+}
+
+void UTInventoryWidget::OnItemDropped(UTInventoryCellWidget* DraggedFrom, UTInventoryCellWidget* DroppedTo)
+{
+	if (OnItemDrop.IsBound())
+	{
+		OnItemDrop.Broadcast(DraggedFrom, DroppedTo);
+	}
 }

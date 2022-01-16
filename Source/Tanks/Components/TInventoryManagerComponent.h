@@ -9,6 +9,7 @@
 
 class UTInventoryComponent;
 class UTInventoryWidget;
+class UTInventoryCellWidget;
 /**
  * 
  */
@@ -22,6 +23,9 @@ public:
 	void Init(UTInventoryComponent * InInventoryComponent);
 
 	FTInventoryItemInfo * GetItemData(FName ItemID) const;
+
+private:
+	void OnItemDropped(UTInventoryCellWidget * /*DraggedFrom*/, UTInventoryCellWidget * /*DroppedTo*/);
 
 protected:
 	UPROPERTY()

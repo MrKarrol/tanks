@@ -17,6 +17,10 @@ UCLASS()
 class TANKS_API UTInventoryCellWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemDrop, 
+	UTInventoryCellWidget * /*DraggedFrom*/, UTInventoryCellWidget * /*DroppedTo*/);
+	
 public:
 	bool HasItem() const noexcept;
 	bool AddItem(const FTInventorySlotInfo & Item, const FTInventoryItemInfo & ItemInfo);
@@ -24,7 +28,21 @@ public:
 
 	const FTInventorySlotInfo & GetItem() const;
 
+protected:
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, 
+	                                       const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, 
+	                                  const FPointerEvent& InMouseEvent, 
+	                                  UDragDropOperation*& OutOperation) override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, 
+	                          const FDragDropEvent& InDragDropEvent, 
+	                          UDragDropOperation* InOperation) override;
+
+public:
+
 	int32 IndexInInventory = -1;
+	
+	FOnItemDrop OnItemDrop;
 
 protected:
 	bool bHasItem = false;
@@ -32,10 +50,16 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UImage * ItemImage;
 
+	UPROPERTY(EditAnywhere, Category = "Icons")
+	TSoftObjectPtr<UTexture2D> NoItemBrush;
+
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock * CountText;
 
 	UPROPERTY()
 	FTInventorySlotInfo StoredItem;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bIsDraggable = true;
 	
 };

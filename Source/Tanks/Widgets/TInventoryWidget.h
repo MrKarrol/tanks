@@ -20,6 +20,9 @@ UCLASS()
 class TANKS_API UTInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemDrop, 
+	UTInventoryCellWidget * /*DraggedFrom*/, UTInventoryCellWidget * /*DroppedTo*/);
 public:
 	virtual void NativeConstruct() override;
 
@@ -28,6 +31,12 @@ public:
 
 protected:
 	UTInventoryCellWidget * CreateCellWidget();
+	
+	void OnItemDropped(UTInventoryCellWidget * DraggedFrom, 
+		UTInventoryCellWidget * DroppedTo);
+
+public:
+	FOnItemDrop OnItemDrop;
 
 protected:
 	UPROPERTY(meta = (BindWidget))

@@ -3,8 +3,10 @@
 
 #include "TInventoryCellWidget.h"
 
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "TInventoryDragDropOperation.h"
 
 
 bool UTInventoryCellWidget::HasItem() const noexcept
@@ -20,7 +22,7 @@ bool UTInventoryCellWidget::AddItem(const FTInventorySlotInfo& Item, const FTInv
 	if (ItemImage)
 	{
 		ItemImage->SetBrushFromTexture(ItemInfo.Icon.Get());
-		ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+		ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f));
 	}
 
 	if (CountText)
@@ -28,15 +30,20 @@ bool UTInventoryCellWidget::AddItem(const FTInventorySlotInfo& Item, const FTInv
 		CountText->SetText(FText::FromString(FString::FromInt(Item.Amount)));
 	}
 
+	bHasItem = true;
+	
 	return true;
 }
 
 void UTInventoryCellWidget::Clear()
 {
-	if (ItemImage)
+	if (NoItemBrush)
 	{
-		ItemImage->SetBrush(FSlateBrush());
-		ItemImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
+		ItemImage->SetBrushFromTexture(NoItemBrush.Get());
+	}
+	else
+	{
+		ItemImage->SetBrush({});
 	}
 
 	if (CountText)
@@ -51,4 +58,50 @@ void UTInventoryCellWidget::Clear()
 const FTInventorySlotInfo& UTInventoryCellWidget::GetItem() const
 {
 	return StoredItem;
+}
+
+FReply UTInventoryCellWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (bIsDraggable && bHasItem &&     
+		InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, 
+			EKeys::LeftMouseButton).NativeReply;
+	}
+	return FReply::Handled();
+}
+
+void UTInventoryCellWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
+	UDragDropOperation*& OutOperation)
+{
+	OutOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(
+		UTInventoryDragDropOperation::StaticClass());
+	if (OutOperation) 
+	{
+		UTInventoryDragDropOperation* InventoryDragDropOperation = 
+			Cast<UTInventoryDragDropOperation>(OutOperation);
+
+		InventoryDragDropOperation->SourceCell = this;
+		InventoryDragDropOperation->DefaultDragVisual = this;
+	}
+	else 
+	{
+		Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+	}
+}
+
+bool UTInventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+	UDragDropOperation* InOperation)
+{
+	UTInventoryDragDropOperation* InventoryDragDropOperation = 
+		Cast<UTInventoryDragDropOperation>(InOperation);
+	if (InventoryDragDropOperation && InventoryDragDropOperation->SourceCell != this)
+	{
+		if (OnItemDrop.IsBound())
+		{
+			OnItemDrop.Broadcast(InventoryDragDropOperation->SourceCell, this);
+		}
+	}
+
+	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }

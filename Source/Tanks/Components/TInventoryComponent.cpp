@@ -12,7 +12,7 @@ void UTInventoryComponent::Init()
 		TArray<FTInventorySlotInfo *> data;
 		DefaultSetup->GetAllRows<FTInventorySlotInfo>(nullptr, data);
 
-		int32 index = 1;
+		int32 index = 0;
 		for (const auto row : data)
 			if (row)
 				Items.Emplace(index++, *row);
