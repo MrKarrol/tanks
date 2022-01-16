@@ -227,6 +227,24 @@ void ATHUD::SetupMiniMap()
 	mini_map_widget->SetBoundsToPaint(sizeX, sizeY, std::move(bounds_to_paint), std::move(player_points));
 }
 
+void ATHUD::ManagePauseMenuCreation(UTWidget *twidget)
+{
+	TArray<ESideWidgetType> showed_widgets_types;
+	showed_side_widgets.GetKeys(showed_widgets_types);
+	for (const auto type : showed_widgets_types)
+		HideSideWidget(type);
+	twidget->OnNeedToRemove.AddLambda([showed_widgets_types, this]()
+	{
+		for (const auto type : showed_widgets_types)
+		{
+			if (type != ESideWidgetType::SWT_MiniMap)
+				ShowSideWidget(type, 1);
+			else
+				ShowSideWidget(type);
+		}
+	});
+}
+
 UUserWidget * ATHUD::ShowMainWidget(const EMainWidgetType main_widget_type, const int32 ZOrder)
 {
 	HideMainWidget();
@@ -235,34 +253,22 @@ UUserWidget * ATHUD::ShowMainWidget(const EMainWidgetType main_widget_type, cons
 	if (const auto new_main_class = MainWidgetClasses[main_widget_type])
 	{
 		showed_main_widget = CreateWidget<UUserWidget>(GetWorld(), new_main_class);
-		if (showed_main_widget)
-		{
-			showed_main_widget->AddToViewport(ZOrder);
-			if (const auto twidget = Cast<UTWidget>(showed_main_widget))
-			{
-				twidget->OnNeedToRemove.AddUObject(this, &ATHUD::HideMainWidget);
+		if (!showed_main_widget)
+			return nullptr;
+		
+		showed_main_widget->AddToViewport(ZOrder);
 
-				if (main_widget_type == EMainWidgetType::MWT_PauseMenu)
-				{
-					TArray<ESideWidgetType> showed_widgets_types;
-					showed_side_widgets.GetKeys(showed_widgets_types);
-					for (const auto type : showed_widgets_types)
-						HideSideWidget(type);
-					twidget->OnNeedToRemove.AddLambda([showed_widgets_types, this]()
-					{
-						for (const auto type : showed_widgets_types)
-						{
-							if (type != ESideWidgetType::SWT_MiniMap)
-								ShowSideWidget(type, 1);
-							else
-								ShowSideWidget(type);
-						}
-					});
-				}
+		if (const auto twidget = Cast<UTWidget>(showed_main_widget))
+		{
+			twidget->OnNeedToRemove.AddUObject(this, &ATHUD::HideMainWidget);
+
+			if (main_widget_type == EMainWidgetType::MWT_PauseMenu)
+			{
+				ManagePauseMenuCreation(twidget);
 			}
-				
-			return showed_main_widget;
 		}
+			
+		return showed_main_widget;
 	}
 	return nullptr;
 }

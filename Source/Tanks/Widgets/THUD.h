@@ -26,7 +26,7 @@ enum class ESideWidgetType : uint8
 };
 
 class UUserWidget;
-
+class UTWidget;
 
 UCLASS()
 class TANKS_API ATHUD : public AHUD
@@ -71,6 +71,7 @@ public:
 private:
 	void SetupPlayerState();
 	void SetupMiniMap();
+	void ManagePauseMenuCreation(UTWidget *);
 	
 protected:
 	virtual void BeginPlay() override;
