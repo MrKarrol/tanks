@@ -18,7 +18,7 @@ void ATPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("ShowMiniMap", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowMinimap);
 	InputComponent->BindAction("ShowTurretHelpers", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowTurretHelpers);
-	InputComponent->BindAction("ShowInventory", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowInventory);
+	InputComponent->BindAction("ShowInventory", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowInventories);
 	InputComponent->BindAction("Pause", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowPauseMenu);
 
 	InputComponent->BindAxis("MoveForward", this, &ATPlayerController::MoveForward);
@@ -67,9 +67,27 @@ void ATPlayerController::ShowTurretHelpers()
 	}
 }
 
+void ATPlayerController::ShowInventories()
+{
+	ShowInventory();
+	ShowEquipmentInventory();
+}
+
 void ATPlayerController::ShowInventory()
 {
 	static constexpr auto inventory_type = ESideWidgetType::SWT_Inventory;
+	if (const auto hud = Cast<ATHUD>(GetHUD()))
+	{
+		if (hud->IsSideWidgetShown(inventory_type))
+			hud->HideSideWidget(inventory_type);
+		else
+			hud->ShowSideWidget(inventory_type);
+	}
+}
+
+void ATPlayerController::ShowEquipmentInventory()
+{
+	static constexpr auto inventory_type = ESideWidgetType::SWT_EquipmentInventory;
 	if (const auto hud = Cast<ATHUD>(GetHUD()))
 	{
 		if (hud->IsSideWidgetShown(inventory_type))

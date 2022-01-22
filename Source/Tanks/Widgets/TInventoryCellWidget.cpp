@@ -30,6 +30,7 @@ bool UTInventoryCellWidget::AddItem(const FTInventorySlotInfo& Item, const FTInv
 		CountText->SetText(FText::FromString(FString::FromInt(Item.Amount)));
 	}
 
+	StoredItem = Item;
 	bHasItem = true;
 	
 	return true;

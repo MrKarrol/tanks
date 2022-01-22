@@ -5,6 +5,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Tanks/Components/TInventoryComponent.h"
+#include "Tanks/Components/TEquipInventoryComponent.h"
 #include "Tanks/Components/TInventoryManagerComponent.h"
 #include "Tanks/Guns/TGun.h"
 
@@ -27,7 +28,8 @@ ATPlayerPawn::ATPlayerPawn()
 	CameraThirdViewComponent->Deactivate();
 
 	InventoryComponent = CreateDefaultSubobject<UTInventoryComponent>("InventoryComponent");
-
+	EquipmentInventoryComponent = 
+		CreateDefaultSubobject<UTEquipInventoryComponent>("EquipInventory");
 	InventoryManagerComponent = CreateDefaultSubobject<UTInventoryManagerComponent>("InventoryManagerComponent");
 }
 
@@ -42,6 +44,7 @@ void ATPlayerPawn::BeginPlay()
 	}
 
 	InventoryManagerComponent->Init(InventoryComponent);
+	InventoryManagerComponent->InitEquipment(EquipmentInventoryComponent);
 }
 
 void ATPlayerPawn::SwapGuns()

@@ -10,7 +10,7 @@ struct FTInventorySlotInfo;
 struct FTInventoryItemInfo;
 
 class UUniformGridPanel;
-
+class UTInventoryComponent;
 class UTInventoryCellWidget;
 
 /**
@@ -32,11 +32,16 @@ public:
 protected:
 	UTInventoryCellWidget * CreateCellWidget();
 	
+	void InitCellWidget(UTInventoryCellWidget* Widget);
+
 	void OnItemDropped(UTInventoryCellWidget * DraggedFrom, 
-		UTInventoryCellWidget * DroppedTo);
+	                   UTInventoryCellWidget * DroppedTo);
 
 public:
 	FOnItemDrop OnItemDrop;
+
+	UPROPERTY()
+	UTInventoryComponent * RepresentedInventory;
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -48,10 +53,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UTInventoryCellWidget> CellWidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TArray<UTInventoryCellWidget *> CellWidgets;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidgetOptional))
 	UTInventoryCellWidget * PiastreCell;
 
 };

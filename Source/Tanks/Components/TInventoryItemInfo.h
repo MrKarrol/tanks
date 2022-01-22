@@ -22,6 +22,15 @@ enum class EItemRarity : uint8
 	IR_Legendary,
 };
 
+UENUM()
+enum class EEquipSlot : uint8
+{
+	ES_NoSlot = 0,
+	ES_Turret,
+	ES_Track,
+	ES_Trunk,
+};
+
 USTRUCT(BlueprintType)
 struct FTInventoryItemInfo : public FTableRowBase
 {
@@ -44,6 +53,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Typing")
 	EItemRarity Rarity;
+
+	UPROPERTY(EditAnywhere, Category="Typing")
+	EEquipSlot EquipSlot;
 
 	// visual representation
 	UPROPERTY(EditAnywhere, Category="Visual")

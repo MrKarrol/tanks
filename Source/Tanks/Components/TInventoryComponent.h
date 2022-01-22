@@ -18,11 +18,12 @@ public:
 	void Init();
 	
 	const FTInventorySlotInfo * GetItem(int32 SlotIndex) const;
-	void SetItem(int32 SlotIndex, const FTInventorySlotInfo & Item );
+	virtual void SetItem(int32 SlotIndex, const FTInventorySlotInfo & Item );
+	virtual int32 GetMaxItemAmount(int32 SlotIndex, const FTInventoryItemInfo& Item);
 	void ClearItem(int32 SlotIndex);
 	const TMap<int32, FTInventorySlotInfo> &GetItems() const;
 	int32 GetItemsNum() const;
-	
+
 protected:
 	UPROPERTY(EditAnywhere)
 	TMap<int32, FTInventorySlotInfo> Items;

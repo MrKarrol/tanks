@@ -13,6 +13,7 @@ class UArrowComponent;
 class ATGun;
 class UTInventoryComponent;
 class UTInventoryManagerComponent;
+class UTEquipInventoryComponent;
 
 
 UCLASS()
@@ -75,6 +76,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UTInventoryComponent * InventoryComponent;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UTEquipInventoryComponent * EquipmentInventoryComponent;
+	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UTInventoryManagerComponent * InventoryManagerComponent;
 

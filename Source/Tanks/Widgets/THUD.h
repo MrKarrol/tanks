@@ -22,7 +22,8 @@ enum class ESideWidgetType : uint8
 	SWT_PlayerState,
 	SWT_MiniMap,
 	SWT_TurretHelpers,
-	SWT_Inventory
+	SWT_Inventory,
+	SWT_EquipmentInventory,
 };
 
 class UUserWidget;

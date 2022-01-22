@@ -30,6 +30,16 @@ void UTInventoryComponent::SetItem(int32 SlotIndex, const FTInventorySlotInfo& I
 	Items.Add(SlotIndex, Item);
 }
 
+int32 UTInventoryComponent::GetMaxItemAmount(int32 SlotIndex, const FTInventoryItemInfo& Item)
+{
+	FTInventorySlotInfo * InfoPtr = Items.Find(SlotIndex);
+	if (InfoPtr && InfoPtr->ID != Item.ID)
+	{
+		return 0;
+	}
+	return -1;
+}
+
 void UTInventoryComponent::ClearItem(int32 SlotIndex)
 {
 	Items.Remove(SlotIndex);

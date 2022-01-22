@@ -13,21 +13,20 @@ UTInventoryManagerComponent::UTInventoryManagerComponent()
 	
 }
 
-void UTInventoryManagerComponent::Init(UTInventoryComponent* InInventoryComponent)
+void UTInventoryManagerComponent::Init(UTInventoryComponent* InventoryComponent)
 {
-	LocalInventoryComponent = InInventoryComponent;
-
-	if (LocalInventoryComponent && InventoryItemsData && InventoryWidgetClass)
+	if (InventoryComponent && InventoryItemsData && InventoryWidgetClass)
 	{
-		LocalInventoryComponent->Init();
+		InventoryComponent->Init();
 		InventoryWidget = CreateWidget<UTInventoryWidget>(GetWorld(), InventoryWidgetClass);
 		InventoryWidget->OnItemDrop.AddUObject(this, 
 			&UTInventoryManagerComponent::OnItemDropped);
+		InventoryWidget->RepresentedInventory = InventoryComponent;
 		InventoryWidget->AddToViewport();
 
-		InventoryWidget->Init(FMath::Max(LocalInventoryComponent->GetItemsNum(), MinInventorySize));
+		InventoryWidget->Init(FMath::Max(InventoryComponent->GetItemsNum(), MinInventorySize));
 
-		for (const auto & Item : LocalInventoryComponent->GetItems())
+		for (const auto & Item : InventoryComponent->GetItems())
 		{
 			const FTInventoryItemInfo * ItemData = GetItemData(Item.Value.ID);
 			if (ItemData)
@@ -45,35 +44,56 @@ FTInventoryItemInfo* UTInventoryManagerComponent::GetItemData(FName ItemID) cons
 	return nullptr;
 }
 
+void UTInventoryManagerComponent::InitEquipment(UTInventoryComponent* EquipmentInventoryComponent)
+{
+	if (EquipInventoryWidgetClass)
+	{
+		EquipInventoryWidget = CreateWidget<UTInventoryWidget>(GetWorld(), 
+		EquipInventoryWidgetClass);
+		EquipInventoryWidget->OnItemDrop.AddUObject(this, 
+			&UTInventoryManagerComponent::OnItemDropped);
+		EquipInventoryWidget->RepresentedInventory = EquipmentInventoryComponent;
+		EquipInventoryWidget->AddToViewport();
+	}
+}
+
 void UTInventoryManagerComponent::OnItemDropped(UTInventoryCellWidget * DraggedFrom, UTInventoryCellWidget * DroppedTo)
 {
-	const auto check_dragged_item = LocalInventoryComponent->GetItem(DraggedFrom->IndexInInventory);
-	const auto check_dropped_to_item = LocalInventoryComponent->GetItem(DroppedTo->IndexInInventory);
-
-	if (!DraggedFrom->HasItem())
+	const auto FromInventory = DraggedFrom->ParentInventoryWidget->RepresentedInventory;
+	const auto ToInventory = DroppedTo->ParentInventoryWidget->RepresentedInventory;
+	if (!FromInventory || !ToInventory || !DraggedFrom->HasItem())
+	{
 		return;
-	
+	}
+
 	if (!DroppedTo->HasItem())
 	{
-		const auto dragged_item = *LocalInventoryComponent->GetItem(DraggedFrom->IndexInInventory);
-		LocalInventoryComponent->SetItem(DroppedTo->IndexInInventory, dragged_item);
-		LocalInventoryComponent->ClearItem(DraggedFrom->IndexInInventory);
-		const FTInventoryItemInfo * ItemData = GetItemData(dragged_item.ID);
+		auto dragged_item = *FromInventory->GetItem(DraggedFrom->IndexInInventory);
+		const auto dragged_item_data = GetItemData(dragged_item.ID);
+		
+		auto item_to_drop = dragged_item;
+		item_to_drop.Amount = ToInventory->GetMaxItemAmount(DroppedTo->IndexInInventory, *dragged_item_data);
+		if (item_to_drop.Amount == 0)	
+			return;
+		if (item_to_drop.Amount == -1)
+			item_to_drop.Amount = dragged_item.Amount;
+		dragged_item.Amount -= item_to_drop.Amount;
+		
 		DraggedFrom->Clear();
+		if (dragged_item.Amount)
+		{
+			DraggedFrom->AddItem(dragged_item, *dragged_item_data);
+			FromInventory->SetItem(DraggedFrom->IndexInInventory, dragged_item);
+		}
+		else
+			FromInventory->ClearItem(DraggedFrom->IndexInInventory);
 		DroppedTo->Clear();
-		DroppedTo->AddItem(dragged_item, *ItemData);
+		DroppedTo->AddItem(item_to_drop, *dragged_item_data);
+		ToInventory->SetItem(DroppedTo->IndexInInventory, item_to_drop);
 	}
 	else
 	{
-		const auto dragged_item = *LocalInventoryComponent->GetItem(DraggedFrom->IndexInInventory);
-		const auto dropped_to_item = *LocalInventoryComponent->GetItem(DroppedTo->IndexInInventory);
-		LocalInventoryComponent->SetItem(DroppedTo->IndexInInventory, dragged_item);
-		LocalInventoryComponent->SetItem(DraggedFrom->IndexInInventory, dropped_to_item);
-		const FTInventoryItemInfo * DraggedItemData = GetItemData(dragged_item.ID);
-		const FTInventoryItemInfo * DroppedToItemData = GetItemData(dropped_to_item.ID);
-		DraggedFrom->Clear();
-		DroppedTo->Clear();
-		DraggedFrom->AddItem(dropped_to_item, *DroppedToItemData);
-		DroppedTo->AddItem(dragged_item, *DraggedItemData);
+		// make swap for different elements in different or same inventories
+		// make elements to stack
 	}
 }

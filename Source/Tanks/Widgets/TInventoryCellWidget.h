@@ -9,6 +9,7 @@
 
 class UTextBlock;
 class UImage;
+class UTInventoryWidget;
 
 /**
  * 
@@ -39,10 +40,13 @@ protected:
 	                          UDragDropOperation* InOperation) override;
 
 public:
-
+	UPROPERTY(EditAnywhere)
 	int32 IndexInInventory = -1;
 	
 	FOnItemDrop OnItemDrop;
+
+	UPROPERTY()
+	UTInventoryWidget * ParentInventoryWidget;
 
 protected:
 	bool bHasItem = false;

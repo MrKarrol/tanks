@@ -26,7 +26,9 @@ private:
 
 	void ShowMinimap();
 	void ShowTurretHelpers();
+	void ShowInventories();
 	void ShowInventory();
+	void ShowEquipmentInventory();
 	void ShowPauseMenu();
 
 	void TankStartFire();

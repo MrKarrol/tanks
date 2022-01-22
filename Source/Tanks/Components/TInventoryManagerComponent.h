@@ -20,17 +20,15 @@ class TANKS_API UTInventoryManagerComponent : public UActorComponent
 public:
 	UTInventoryManagerComponent();
 
-	void Init(UTInventoryComponent * InInventoryComponent);
+	void Init(UTInventoryComponent * InventoryComponent);
 
 	FTInventoryItemInfo * GetItemData(FName ItemID) const;
-
+	void InitEquipment(UTInventoryComponent * EquipmentInventoryComponent);
+	
 private:
 	void OnItemDropped(UTInventoryCellWidget * /*DraggedFrom*/, UTInventoryCellWidget * /*DroppedTo*/);
 
 protected:
-	UPROPERTY()
-	UTInventoryComponent * LocalInventoryComponent;
-
 	UPROPERTY(EditAnywhere)
 	UDataTable * InventoryItemsData;
 
@@ -42,5 +40,11 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	int32 MinInventorySize = 10;
+
+	UPROPERTY()
+	UTInventoryWidget * EquipInventoryWidget;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UTInventoryWidget> EquipInventoryWidgetClass;
 
 };
