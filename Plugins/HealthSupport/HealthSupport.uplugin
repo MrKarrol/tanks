@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "HealthSupport",
+	"Description": "Health component support",
+	"Category": "Other",
+	"CreatedBy": "KrisKaroll",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "HealthSupport",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
