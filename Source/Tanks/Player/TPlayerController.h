@@ -30,6 +30,7 @@ private:
 	void ShowInventory();
 	void ShowEquipmentInventory();
 	void ShowPauseMenu();
+	void ShowBrowseWidget();
 
 	void TankStartFire();
 	void TankStopFire();
@@ -40,7 +41,7 @@ private:
 	void MoveRight(float Axis);
 	void MoveTurretUp(float Axis);
 	void MoveTurretRight(float Axis);
-	
+
 public:
 	FSimpleMulticastDelegate OnMouseButtonUp;
 	

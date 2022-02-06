@@ -275,12 +275,17 @@ UUserWidget * ATHUD::ShowMainWidget(const EMainWidgetType main_widget_type, cons
 
 UUserWidget * ATHUD::ShowSideWidget(const ESideWidgetType side_widget_type, const int32 ZOrder)
 {
-	HideSideWidget(side_widget_type);
 	if (! SideWidgetClasses.Contains(side_widget_type))
 		return nullptr;
 	
 	if (const auto new_side_class = SideWidgetClasses[side_widget_type])
 	{
+		if (IsSideWidgetShown(side_widget_type))
+		{
+			HideSideWidget(side_widget_type);
+			return nullptr;
+		}
+		
 		showed_side_widgets.Add(side_widget_type, CreateWidget<UUserWidget>(GetWorld(), new_side_class));
 		if (const auto widget = *showed_side_widgets.Find(side_widget_type))
 			widget->AddToViewport(ZOrder);

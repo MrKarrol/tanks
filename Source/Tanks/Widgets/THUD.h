@@ -24,6 +24,7 @@ enum class ESideWidgetType : uint8
 	SWT_TurretHelpers,
 	SWT_Inventory,
 	SWT_EquipmentInventory,
+	SWT_BrowseWidget,
 };
 
 class UUserWidget;
