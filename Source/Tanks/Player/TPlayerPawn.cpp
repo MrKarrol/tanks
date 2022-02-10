@@ -8,6 +8,7 @@
 #include "Tanks/Components/TEquipInventoryComponent.h"
 #include "Tanks/Components/TInventoryManagerComponent.h"
 #include "Tanks/Guns/TGun.h"
+#include "InteractionComponent.h"
 
 
 ATPlayerPawn::ATPlayerPawn()
@@ -31,6 +32,9 @@ ATPlayerPawn::ATPlayerPawn()
 	EquipmentInventoryComponent = 
 		CreateDefaultSubobject<UTEquipInventoryComponent>("EquipInventory");
 	InventoryManagerComponent = CreateDefaultSubobject<UTInventoryManagerComponent>("InventoryManagerComponent");
+
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
+	InteractionComponent->SetupAttachment(BodyMeshComponent);
 }
 
 void ATPlayerPawn::BeginPlay()
@@ -80,6 +84,12 @@ void ATPlayerPawn::ShowInventory()
 		InventoryManagerComponent->ShowInventory();
 		InventoryManagerComponent->ShowEquipmentInventory();
 	}
+}
+
+void ATPlayerPawn::Interact()
+{
+	if (InteractionComponent)
+		InteractionComponent->Interact();
 }
 
 void ATPlayerPawn::CalculateTopDownTurretRotation()

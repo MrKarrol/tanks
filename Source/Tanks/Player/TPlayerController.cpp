@@ -34,6 +34,7 @@ void ATPlayerController::SetupInputComponent()
 	InputComponent->BindAction("AlternateFire", EInputEvent::IE_Pressed, this, &ATPlayerController::TankAlternateFire);
 	InputComponent->BindAction("SwapGuns", EInputEvent::IE_Pressed, this, &ATPlayerController::TankSwapGuns);
 	InputComponent->BindAction("Browse", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowBrowseWidget);
+	InputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &ATPlayerController::Interact);
 }
 
 void ATPlayerController::OnLeftMouseButtonUp()
@@ -130,6 +131,12 @@ void ATPlayerController::MoveTurretRight(float Axis)
 {
 	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
 		pawn->MoveTurretRight(Axis);
+}
+
+void ATPlayerController::Interact()
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->Interact();
 }
 
 void ATPlayerController::BeginPlay()

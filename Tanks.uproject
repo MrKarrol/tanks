@@ -17,6 +17,10 @@
 		{
 			"Name": "HealthSupport",
 			"Enabled": true
+		},
+		{
+			"Name": "QuestSystem",
+			"Enabled": true
 		}
 	]
 }

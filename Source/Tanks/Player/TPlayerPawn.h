@@ -15,6 +15,7 @@ class UTInventoryComponent;
 class UTInventoryManagerComponent;
 class UTEquipInventoryComponent;
 
+class UInteractionComponent;
 
 UCLASS()
 class TANKS_API ATPlayerPawn : public ATTankPawn, public IIScoreTaker, public IIHealable
@@ -50,6 +51,7 @@ public:
 	size_t TurretHelpersNumber() const;
 
 	void ShowInventory();
+	void Interact();
 
 protected:
 	virtual void BeginPlay() override;
@@ -86,6 +88,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Helpers")
 	uint8 MaxTurretHelpersCount = 3;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "QuestSystem")
+	UInteractionComponent * InteractionComponent;
 	
 private:
 	void DefineCameraView(ATGun*);

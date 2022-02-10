@@ -40,6 +40,8 @@ private:
 	void MoveTurretUp(float Axis);
 	void MoveTurretRight(float Axis);
 
+	void Interact();
+
 public:
 	FSimpleMulticastDelegate OnMouseButtonUp;
 	
