@@ -15,26 +15,8 @@ UTInventoryManagerComponent::UTInventoryManagerComponent()
 
 void UTInventoryManagerComponent::Init(UTInventoryComponent* InventoryComponent)
 {
-	if (InventoryComponent && InventoryItemsData && InventoryWidgetClass)
-	{
-		InventoryComponent->Init();
-		InventoryWidget = CreateWidget<UTInventoryWidget>(GetWorld(), InventoryWidgetClass);
-		InventoryWidget->OnItemDrop.AddUObject(this, 
-			&UTInventoryManagerComponent::OnItemDropped);
-		InventoryWidget->RepresentedInventory = InventoryComponent;
-		InventoryWidget->AddToViewport();
-
-		InventoryWidget->Init(FMath::Max(InventoryComponent->GetItemsNum(), MinInventorySize));
-
-		for (const auto & Item : InventoryComponent->GetItems())
-		{
-			const FTInventoryItemInfo * ItemData = GetItemData(Item.Value.ID);
-			if (ItemData)
-			{
-				InventoryWidget->AddItem(Item.Value, *ItemData, Item.Key);
-			}
-		}
-	}
+	Inventory = InventoryComponent;
+	Inventory->Init();
 }
 
 FTInventoryItemInfo* UTInventoryManagerComponent::GetItemData(FName ItemID) const
@@ -46,13 +28,54 @@ FTInventoryItemInfo* UTInventoryManagerComponent::GetItemData(FName ItemID) cons
 
 void UTInventoryManagerComponent::InitEquipment(UTInventoryComponent* EquipmentInventoryComponent)
 {
+	EquipInventory = EquipmentInventoryComponent;
+}
+
+void UTInventoryManagerComponent::ShowInventory()
+{
+	if (InventoryWidget)
+	{
+		InventoryWidget->RemoveFromViewport();
+		InventoryWidget = nullptr;
+		return;
+	}
+	if (Inventory && InventoryItemsData && InventoryWidgetClass)
+	{
+		InventoryWidget = CreateWidget<UTInventoryWidget>(GetWorld(), InventoryWidgetClass);
+		InventoryWidget->OnItemDrop.AddUObject(this, 
+			&UTInventoryManagerComponent::OnItemDropped);
+		InventoryWidget->RepresentedInventory = Inventory;
+		InventoryWidget->AddToViewport();
+
+		InventoryWidget->Init(FMath::Max(Inventory->GetItemsNum(), MinInventorySize));
+
+		for (const auto & Item : Inventory->GetItems())
+		{
+			const FTInventoryItemInfo * ItemData = GetItemData(Item.Value.ID);
+			if (ItemData)
+			{
+				InventoryWidget->AddItem(Item.Value, *ItemData, Item.Key);
+			}
+		}
+	}
+}
+
+void UTInventoryManagerComponent::ShowEquipmentInventory()
+{
+	if (EquipInventoryWidget)
+	{
+		EquipInventoryWidget->RemoveFromViewport();
+		EquipInventoryWidget = nullptr;
+		return;
+	}
+	
 	if (EquipInventoryWidgetClass)
 	{
 		EquipInventoryWidget = CreateWidget<UTInventoryWidget>(GetWorld(), 
 		EquipInventoryWidgetClass);
 		EquipInventoryWidget->OnItemDrop.AddUObject(this, 
 			&UTInventoryManagerComponent::OnItemDropped);
-		EquipInventoryWidget->RepresentedInventory = EquipmentInventoryComponent;
+		EquipInventoryWidget->RepresentedInventory = EquipInventory;
 		EquipInventoryWidget->AddToViewport();
 	}
 }

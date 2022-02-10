@@ -49,6 +49,8 @@ public:
 	bool CanSpawnTurretHelper() const;
 	size_t TurretHelpersNumber() const;
 
+	void ShowInventory();
+
 protected:
 	virtual void BeginPlay() override;
 	

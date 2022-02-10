@@ -25,6 +25,9 @@ public:
 	FTInventoryItemInfo * GetItemData(FName ItemID) const;
 	void InitEquipment(UTInventoryComponent * EquipmentInventoryComponent);
 	
+	void ShowInventory();
+	void ShowEquipmentInventory();
+	
 private:
 	void OnItemDropped(UTInventoryCellWidget * /*DraggedFrom*/, UTInventoryCellWidget * /*DroppedTo*/);
 
@@ -38,13 +41,19 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UTInventoryWidget> InventoryWidgetClass;
 
+	UPROPERTY()
+	UTInventoryComponent * Inventory;
+
 	UPROPERTY(EditAnywhere)
 	int32 MinInventorySize = 10;
 
 	UPROPERTY()
 	UTInventoryWidget * EquipInventoryWidget;
-	
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UTInventoryWidget> EquipInventoryWidgetClass;
+
+	UPROPERTY()
+	UTInventoryComponent * EquipInventory;
 
 };

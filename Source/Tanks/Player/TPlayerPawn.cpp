@@ -73,6 +73,15 @@ size_t ATPlayerPawn::TurretHelpersNumber() const
 	return mTurretHelpers.Num();
 }
 
+void ATPlayerPawn::ShowInventory()
+{
+	if (InventoryManagerComponent)
+	{
+		InventoryManagerComponent->ShowInventory();
+		InventoryManagerComponent->ShowEquipmentInventory();
+	}
+}
+
 void ATPlayerPawn::CalculateTopDownTurretRotation()
 {
 	if (const auto controller = Cast<APlayerController>(GetController()))

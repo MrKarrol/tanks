@@ -58,20 +58,8 @@ void ATPlayerController::ShowTurretHelpers()
 
 void ATPlayerController::ShowInventories()
 {
-	ShowInventory();
-	ShowEquipmentInventory();
-}
-
-void ATPlayerController::ShowInventory()
-{
-	if (const auto hud = Cast<ATHUD>(GetHUD()))
-		hud->ShowSideWidget(ESideWidgetType::SWT_Inventory);
-}
-
-void ATPlayerController::ShowEquipmentInventory()
-{
-	if (const auto hud = Cast<ATHUD>(GetHUD()))
-		hud->ShowSideWidget(ESideWidgetType::SWT_EquipmentInventory);
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->ShowInventory();
 }
 
 void ATPlayerController::ShowPauseMenu()
