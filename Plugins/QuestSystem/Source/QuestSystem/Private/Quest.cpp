@@ -70,3 +70,18 @@ void AQuest::OnObjectiveCompleted(UObjective* Objective)
 		OnQuestStatusUpdated.Broadcast(this);
 }
 
+TArray<UObjective*> AQuest::GetObjectives() const
+{
+	return Objectives;
+}
+
+const FText& AQuest::GetName() const
+{
+	return Name;
+}
+
+const FText& AQuest::GetDescription() const
+{
+	return Description;
+}
+

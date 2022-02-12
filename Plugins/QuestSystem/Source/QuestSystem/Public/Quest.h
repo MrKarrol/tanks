@@ -40,10 +40,16 @@ public:
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void AddInteractObjective();
 
+	TArray<UObjective*> GetObjectives() const;
+
+	const FText & GetName() const;
+
+	const FText & GetDescription() const;
+
 protected:
 	void OnObjectiveCompleted(UObjective * Objective);
 
-public:
+protected:
 	UPROPERTY(EditAnywhere)
 	FText Name;
 
@@ -52,7 +58,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<UObjective *> Objectives;
-
+	
 	UPROPERTY(EditAnywhere)
 	bool bIsStoryQuest = true;
 
