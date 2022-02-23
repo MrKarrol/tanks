@@ -24,13 +24,13 @@ public:
 	void Init(AQuest * Quest);
 
 protected:
-	UPROPERTY(meta = (BindWiddgetOptional))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UTextBlock * NameText;
 
-	UPROPERTY(meta = (BindWiddgetOptional))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UScrollBox * ObjectivesList;
 
-	UPROPERTY(meta = (BindWiddgetOptional))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UTextBlock * DescriptionText;
 
 	UPROPERTY(EditDefaultsOnly)
