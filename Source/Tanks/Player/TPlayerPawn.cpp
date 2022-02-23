@@ -9,6 +9,13 @@
 #include "Tanks/Components/TInventoryManagerComponent.h"
 #include "Tanks/Guns/TGun.h"
 #include "InteractionComponent.h"
+#include "Quest.h"
+#include "QuestListComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "QuestDialog.h"
+#include "QuestList.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 
 ATPlayerPawn::ATPlayerPawn()
@@ -35,6 +42,8 @@ ATPlayerPawn::ATPlayerPawn()
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
 	InteractionComponent->SetupAttachment(BodyMeshComponent);
+
+	QuestListComponent = CreateDefaultSubobject<UQuestListComponent>("QuestListComponent");
 }
 
 void ATPlayerPawn::BeginPlay()
@@ -61,20 +70,20 @@ void ATPlayerPawn::SwapGuns()
 
 void ATPlayerPawn::AddTurretHelper(ATEnemyTurret* helper)
 {
-	if (mTurretHelpers.Num() >= MaxTurretHelpersCount)
+	if (TurretHelpers.Num() >= MaxTurretHelpersCount)
 		return;
 
-	mTurretHelpers.Emplace(helper);
+	TurretHelpers.Emplace(helper);
 }
 
 bool ATPlayerPawn::CanSpawnTurretHelper() const
 {
-	return mTurretHelpers.Num() < MaxTurretHelpersCount;
+	return TurretHelpers.Num() < MaxTurretHelpersCount;
 }
 
 size_t ATPlayerPawn::TurretHelpersNumber() const
 {
-	return mTurretHelpers.Num();
+	return TurretHelpers.Num();
 }
 
 void ATPlayerPawn::ShowInventory()
@@ -143,6 +152,76 @@ void ATPlayerPawn::Tick(float DeltaTime)
 		CalculateTopDownTurretRotation();
 	else
 		CalculateThirdViewTurretRotation(DeltaTime);
+}
+
+void ATPlayerPawn::Interact_Implementation(AActor* ActorInteractedWithObject)
+{
+	if (! ActorInteractedWithObject)
+		return;
+	
+	const auto ActorQuestListComp = ActorInteractedWithObject->GetComponentByClass(
+		UQuestListComponent::StaticClass());
+	if (! ActorQuestListComp)
+		return;
+
+	const auto ActorQuestList = Cast<UQuestListComponent>(ActorQuestListComp);
+
+	// here is limitations and quest logic
+
+	TArray<AActor *> AttachedActors;
+	GetAttachedActors(AttachedActors);
+	bool HadQuestsAvailable = false;
+	for (const auto Actor : AttachedActors)
+	{
+		if (const auto Quest = Cast<AQuest>(Actor))
+		{
+			if (Quest->IsAlreadyTaken() ||
+				(Quest->GetPrerequisiteQuest() &&
+				! Quest->GetPrerequisiteQuest()->IsCompleted()))
+			{
+				continue;
+			}
+
+			if (QuestDialogClass)
+			{
+				const auto QuestDialog = CreateWidget<UQuestDialog>(GetWorld(),
+					QuestDialogClass);
+				QuestDialog->Init(Quest);
+				QuestDialog->OnQuestAccepted.BindUObject(
+					ActorQuestList,
+					&UQuestListComponent::AddQuest,
+					Quest);
+				QuestDialog->OnQuestQuited.BindLambda(
+					[this, ActorInteractedWithObject]()
+					{
+						NotifyInteractionFinished(this, ActorInteractedWithObject);
+					});
+				QuestDialog->AddToViewport();
+			}
+
+			HadQuestsAvailable = true;
+		}
+	}
+
+	if (! HadQuestsAvailable)
+		NotifyInteractionFinished(this, ActorInteractedWithObject);
+}
+
+void ATPlayerPawn::ToggleQuestListVisibility()
+{
+	const auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (QuestList)
+	{
+		QuestList->RemoveFromParent();
+		QuestList = nullptr;
+	}
+	else if (QuestListClass)
+	{
+		QuestList = CreateWidget<UQuestList>(GetWorld(), QuestListClass);
+		QuestList->Init(QuestListComponent);
+		QuestList->AddToViewport();
+	}
 }
 
 void ATPlayerPawn::DefineCameraView(ATGun* gun)

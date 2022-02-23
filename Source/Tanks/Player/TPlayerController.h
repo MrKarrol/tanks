@@ -41,6 +41,7 @@ private:
 	void MoveTurretRight(float Axis);
 
 	void Interact();
+	void ToggleJournal();
 
 public:
 	FSimpleMulticastDelegate OnMouseButtonUp;

@@ -35,6 +35,7 @@ void ATPlayerController::SetupInputComponent()
 	InputComponent->BindAction("SwapGuns", EInputEvent::IE_Pressed, this, &ATPlayerController::TankSwapGuns);
 	InputComponent->BindAction("Browse", EInputEvent::IE_Pressed, this, &ATPlayerController::ShowBrowseWidget);
 	InputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &ATPlayerController::Interact);
+	InputComponent->BindAction("Journal", EInputEvent::IE_Pressed, this, &ATPlayerController::ToggleJournal);
 }
 
 void ATPlayerController::OnLeftMouseButtonUp()
@@ -137,6 +138,12 @@ void ATPlayerController::Interact()
 {
 	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
 		pawn->Interact();
+}
+
+void ATPlayerController::ToggleJournal()
+{
+	if (const auto pawn = Cast<ATPlayerPawn>(GetPawn()))
+		pawn->ToggleQuestListVisibility();
 }
 
 void ATPlayerController::BeginPlay()

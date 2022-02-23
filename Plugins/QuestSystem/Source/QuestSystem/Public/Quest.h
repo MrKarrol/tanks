@@ -46,6 +46,14 @@ public:
 
 	const FText & GetDescription() const;
 
+	bool IsAlreadyTaken() const noexcept;
+
+	bool IsStoryQuest() const noexcept;
+
+	AQuest * GetPrerequisiteQuest() const;
+
+	bool IsCompleted() const noexcept;
+
 protected:
 	void OnObjectiveCompleted(UObjective * Objective);
 
@@ -66,9 +74,12 @@ protected:
 	bool bKeepObjectivesOrder = true;
 
 	UPROPERTY(EditAnywhere)
-	AQuest * PrequisedQuest;
+	AQuest * PrerequisiteQuest;
 
 	UPROPERTY(EditAnywhere)
 	bool bIsTaken;
+
+	UPROPERTY()
+	bool bIsCompleted;
 	
 };

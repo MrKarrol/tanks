@@ -5,6 +5,7 @@
 #include "Tanks/Enemies/TEnemyTurret.h"
 #include "Tanks/Interfaces/IScoreTaker.h"
 #include "Tanks/Interfaces/IHealable.h"
+#include "InteractableObject.h"
 #include "TPlayerPawn.generated.h"
 
 class UCameraComponent;
@@ -16,9 +17,16 @@ class UTInventoryManagerComponent;
 class UTEquipInventoryComponent;
 
 class UInteractionComponent;
+class UQuestDialog;
+class UQuestList;
+class UQuestListComponent;
 
 UCLASS()
-class TANKS_API ATPlayerPawn : public ATTankPawn, public IIScoreTaker, public IIHealable
+class TANKS_API ATPlayerPawn
+	: public ATTankPawn
+	, public IIScoreTaker
+	, public IIHealable
+	, public IInteractableObject
 {
 	GENERATED_BODY()
 
@@ -91,6 +99,24 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "QuestSystem")
 	UInteractionComponent * InteractionComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "QuestSystem")
+	TSubclassOf<UQuestDialog> QuestDialogClass;
+
+	UPROPERTY()
+	UQuestList * QuestList;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "QuestSystem")
+	TSubclassOf<UQuestList> QuestListClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "QuestSystem")
+	UQuestListComponent * QuestListComponent;
+
+public:
+	virtual void Interact_Implementation(AActor * ActorInteractedWithObject) override;
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleQuestListVisibility();
 	
 private:
 	void DefineCameraView(ATGun*);
@@ -106,6 +132,6 @@ private:
 	float mCachedTurretUpDelta;
 	float mCachedTurretRotationDelta;
 
-	TArray<ATEnemyTurret *> mTurretHelpers;
+	TArray<ATEnemyTurret *> TurretHelpers;
 
 };

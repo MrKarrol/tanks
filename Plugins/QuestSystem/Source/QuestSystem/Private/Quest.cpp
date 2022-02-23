@@ -68,6 +68,7 @@ void AQuest::OnObjectiveCompleted(UObjective* Objective)
 	}
 	if (OnQuestStatusUpdated.IsBound())
 		OnQuestStatusUpdated.Broadcast(this);
+	
 }
 
 TArray<UObjective*> AQuest::GetObjectives() const
@@ -83,5 +84,25 @@ const FText& AQuest::GetName() const
 const FText& AQuest::GetDescription() const
 {
 	return Description;
+}
+
+bool AQuest::IsAlreadyTaken() const noexcept
+{
+	return bIsTaken;
+}
+
+bool AQuest::IsStoryQuest() const noexcept
+{
+	return bIsStoryQuest;
+}
+
+AQuest* AQuest::GetPrerequisiteQuest() const
+{
+	return PrerequisiteQuest;
+}
+
+bool AQuest::IsCompleted() const noexcept
+{
+	return bIsCompleted;
 }
 
